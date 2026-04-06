@@ -87,55 +87,69 @@ const curriculumData = [
             {
                 id: "py-l1",
                 type: "info",
-                instruction: "Time for Python! It is awesome for AI and logic. Python reads code very cleanly and structured.",
+                instruction: "Time for Python! Before we write any code, we must understand how a computer reads our language. Python is very clean, but it is strict about Punctuation.",
             },
             {
                 id: "py-l2",
                 type: "mcq",
-                instruction: "To get the computer to print a line to the screen, we use 'print'. In Python, everything we want to print must be wrapped in parentheses (). Which line is logical?",
+                instruction: "To get the computer to display text, we use a 'Function'. A function is an action. Which of the words below sounds like a function that displays text?",
                 options: [
-                    "print 'hello'",
-                    "print(hello)",
-                    "print() hello"
+                    "print",
+                    "calculate",
+                    "destroy"
                 ],
-                correctAnswer: 1,
-                feedback: "Correct! The parentheses always enclose the data.",
-                hint: "The word print must be followed directly by parentheses enclosing what you want to output.",
-                explanation: "In modern Python (version 3+), print is a built-in function, and functions always require parentheses to be called."
+                correctAnswer: 0,
+                feedback: "Correct! 'print' is a built-in action.",
+                hint: "Think about what a printer does with a document.",
+                explanation: "The word 'print' is native to Python. It literally means 'Print this to the console'."
             },
             {
                 id: "py-l3",
                 type: "mcq",
-                instruction: "If we just write print(hello), the computer thinks 'hello' is a variable! To explain that it is text, we need to put quotes around it. Which is right?",
+                instruction: "But just the word 'print' isn't enough! We must tell the function EXACLY what to grab and print. To do this, we use Parentheses: (). What do parentheses do?",
                 options: [
-                    "print('hello')",
-                    "print(\"hello\")",
-                    "A and B give the same result"
+                    "They do nothing, just decoration.",
+                    "They 'hold' the data we want the function to execute.",
+                    "They stop the program from crashing."
                 ],
-                correctAnswer: 2,
-                feedback: "Nice job! Both work the same.",
-                hint: "Try guessing the last option, Python is pretty flexible.",
-                explanation: "In Python, it does not matter if you use single (') or double (\") quotes to create strings (text)."
+                correctAnswer: 1,
+                feedback: "Exactly. The parentheses act like hands.",
+                hint: "Think of them like a container or a pair of hands.",
+                explanation: "In all programming, whenever you call a function like print, you MUST use () right after it to hold the data: print(data)."
             },
             {
                 id: "py-l4",
                 type: "mcq",
-                instruction: "What is this type of text data called in programming?",
+                instruction: "Great! So we have print(text). BUT wait! If we write a normal human word like hello, the computer thinks hello is a piece of code and gets confused. How do we protect normal text so the computer ignores it as code?",
                 options: [
-                    "String",
-                    "Integer",
-                    "Boolean"
+                    "We capitalize all letters.",
+                    "We wrap the text in Quotation Marks (\"\").",
+                    "We use brackets []."
                 ],
-                correctAnswer: 0,
-                feedback: "Exactly. A string of characters.",
-                hint: "Think of a piece of rope or thread.",
-                explanation: "Text in code is called a 'String', because it is a sequence of characters connected in a row."
+                correctAnswer: 1,
+                feedback: "Spot on! Quotes create a 'String' of protected text.",
+                hint: "Think about how we quote people in a book.",
+                explanation: "Whenever you write human text, you MUST wrap it in quotes. This creates a data type called a String. E.g. 'hello' or \"hello\"."
             },
             {
                 id: "py-l5",
+                type: "mcq",
+                instruction: "Putting it all together: Function + Parentheses + Quotes. Which line is 100% correct?",
+                options: [
+                    "print 'hello'",
+                    "print(\"hello\")",
+                    "print(hello)"
+                ],
+                correctAnswer: 1,
+                feedback: "Nice job! You perfectly combined the syntax.",
+                hint: "We need the function word, the holding parentheses, AND the protective quotes.",
+                explanation: "print activates the action. () holds the data. \"\" protects the data as a String. So: print(\"hello\")"
+            },
+            {
+                id: "py-l6",
                 type: "code",
                 lang: "python", 
-                instruction: "Now we step into the terminal!\\n\\nWrite a print() command that exactly outputs: Hello AI!",
+                instruction: "Now we step into the terminal!\\n\\nWrite a print() command that exactly outputs the string: Hello AI!",
                 initialCode: "# Write your code here\n",
                 validationRegex: /print\(['"]Hello AI!['"]\)/i,
                 successFeedback: "Wonderful. The terminal understood you!",
@@ -144,12 +158,12 @@ const curriculumData = [
                 explanation: "The answer is print('Hello AI!'). We must both call the print() function and give it a String."
             },
             {
-                id: "py-l6",
+                id: "py-l7",
                 type: "info",
                 instruction: "Next concept: VARIABLES. A variable is like a digital box you can put things into, and give the box a name.",
             },
             {
-                id: "py-l7",
+                id: "py-l8",
                 type: "code",
                 lang: "python", 
                 instruction: "To save 'Alex' in the box 'name' we write: name = 'Alex'. Let's try! \\n\\nType the code: user = 'Robot'.",
@@ -157,7 +171,7 @@ const curriculumData = [
                 validationRegex: /user\s*=\s*['"]Robot['"]/i,
                 successFeedback: "Perfect! You just put the data string 'Robot' inside the variable 'user'. That is the foundation of all software!",
                 errorFeedback: "Not quite, look at the exact spelling.",
-                hint: "The variable's name is on the left, then an '=' sign, and then the value on the right.",
+                hint: "The variable's name is on the left, then an '=' sign, and then the string value on the right.",
                 explanation: "In Python, you declare variables by just writing name = value. So user = 'Robot' stores the text Robot."
             }
         ]

@@ -733,3 +733,59 @@ body {
         height: auto;
     }
 }
+
+/* Difficulty Modal */
+.difficulty-modal {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(11, 14, 20, 0.95);
+    backdrop-filter: blur(5px);
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.difficulty-content {
+    background: var(--card-bg);
+    border: 2px solid var(--border-color);
+    border-radius: 20px;
+    padding: 30px;
+    width: 90%;
+    max-width: 400px;
+    text-align: center;
+    box-shadow: 0 15px 30px rgba(0,0,0,0.8);
+    animation: fadeIn 0.3s ease-out;
+}
+.difficulty-content h2 { margin-bottom: 5px; }
+.difficulty-content p { color: var(--text-secondary); margin-bottom: 20px; }
+.diff-options { display: flex; flex-direction: column; gap: 15px; }
+.btn-diff {
+    background: #0f111a;
+    border: 2px solid var(--border-color);
+    padding: 15px;
+    border-radius: 15px;
+    cursor: pointer;
+    color: var(--text-primary);
+    box-shadow: 0 6px 0 var(--border-color);
+    transition: all 0.15s;
+    font-family: inherit;
+    text-align: left;
+}
+.btn-diff h3 { margin: 0 0 5px 0; }
+.btn-diff:hover { transform: translateY(-2px); box-shadow: 0 8px 0 var(--border-color); }
+.btn-diff:active { transform: translateY(6px); box-shadow: 0 0 0 var(--border-color); }
+
+.diff-easy { border-color: var(--success-color); box-shadow: 0 6px 0 var(--success-shadow); }
+.diff-easy h3 { color: var(--success-color); }
+.diff-easy:hover { box-shadow: 0 8px 0 var(--success-shadow); }
+.diff-easy:active { box-shadow: 0 0 0 var(--success-shadow); }
+
+.diff-medium { border-color: #ffcd00; box-shadow: 0 6px 0 #cca400; }
+.diff-medium h3 { color: #ffcd00; }
+.diff-medium:hover { box-shadow: 0 8px 0 #cca400; }
+.diff-medium:active { box-shadow: 0 0 0 #cca400; }
+
+.diff-hard { border-color: var(--wrong-color); box-shadow: 0 6px 0 var(--wrong-shadow); }
+.diff-hard h3 { color: var(--wrong-color); }
+.diff-hard:hover { box-shadow: 0 8px 0 var(--wrong-shadow); }
+.diff-hard:active { box-shadow: 0 0 0 var(--wrong-shadow); }

@@ -1,9 +1,12 @@
-const appState = {
-    currentModuleIndex: 0,
+// State Management
+let appState = {
+    currentModuleIndex: null,
     currentLessonIndex: 0,
     hearts: 3,
-    progress: 0,
-    completedModules: []
+    maxHearts: null,
+    completedModules: [],
+    unlockedModules: 1,
+    progress: 0
 };
 
 // Sound Synthesizer (Web Audio API)
@@ -78,12 +81,36 @@ const btnCloseChat = document.getElementById('btn-close-chat');
 const btnSendChat = document.getElementById('btn-send-chat');
 const chatInput = document.getElementById('chat-input');
 const chatHistory = document.getElementById('chat-history');
+const difficultyModal = document.getElementById('difficulty-modal');
+const btnDiffs = document.querySelectorAll('.btn-diff');
 
 // Initialization
 function init() {
+    loadState();
+    
+    if (!appState.maxHearts) {
+        difficultyModal.classList.remove('hidden');
+        btnDiffs.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const hearts = parseInt(e.currentTarget.getAttribute('data-hearts'));
+                appState.maxHearts = hearts;
+                appState.hearts = hearts;
+                saveState();
+                difficultyModal.classList.add('hidden');
+                init(); // Re-run init now that we have hearts
+            });
+        });
+        return; // Wait for difficulty selection
+    }
+
     // Add interactions to map
     document.addEventListener('click', () => { initAudio(); }, {once: true});
     renderMap();
+    updateHearts();
+    
+    if (appState.currentModuleIndex !== null) {
+        startModule(appState.currentModuleIndex);
+    }
 }
 
 function renderMap() {
@@ -172,7 +199,7 @@ function loadLesson() {
         if (!appState.completedModules.includes(appState.currentModuleIndex)) {
             appState.completedModules.push(appState.currentModuleIndex);
         }
-        appState.hearts = 3;
+        appState.hearts = appState.maxHearts;
         appState.currentModuleIndex = null;
         appState.currentLessonIndex = 0;
         saveState();
@@ -387,11 +414,11 @@ btnHint.addEventListener('click', () => {
 });
 
 btnContinue.addEventListener('click', () => {
-    if (feedbackPanel.classList.contains('wrong')) {
+     if (feedbackPanel.classList.contains('wrong')) {
          feedbackPanel.classList.add('hidden');
          if(appState.hearts <= 0) {
              alert('You are out of hearts! Restarting the module.');
-             appState.hearts = 3;
+             appState.hearts = appState.maxHearts;
              updateHearts();
              startModule(appState.currentModuleIndex);
          }
@@ -454,19 +481,36 @@ function sendChatMessage() {
         const aiMsg = document.createElement('div');
         aiMsg.className = 'chat-message ai-message';
         
-        let response = "I'm your AI instructor! ";
-        if (currentLessonObj) {
-            response += `It looks like you're in the ${currentLessonObj.lang || 'coding'} module right now. `;
+        const lowerText = text.toLowerCase();
+        let response = "";
+        
+        // Advanced NLP Keywords
+        if (lowerText.includes('parenthes') || lowerText.includes('bracket')) {
+            response = "Ah, parentheses `()`! In programming, they usually denote a **Function Call**. For example, `print` is just a word, but `print()` tells the computer: 'Execute this function right now!'. Everything inside the parentheses is the data you are feeding the function.";
+        } else if (lowerText.includes('quote') || lowerText.includes('quotation')) {
+            response = "Quotes (`\"` or `'`) are used to create a **String**. A String is just plain text. Without quotes, the computer tries to read words like `hello` as code/variables and crashes. Quotes say: 'Hey, this is just normal human text, ignore it!'";
+        } else if (lowerText.includes('variab')) {
+            response = "A variable is like a digital cardboard box. You write `name = 'Alex'`. Now, whenever you type `print(name)`, the computer looks inside the box, sees 'Alex', and prints that instead! It's how computers remember things.";
+        } else if (lowerText.includes('semicolon') || lowerText.includes(';')) {
+            response = "The semicolon `;` is critical in C-family languages (C#, C++, Java). While humans use a period `.` to end a sentence, computers use a semicolon `;` to know exactly where an instruction ends.";
+        } else if (lowerText.includes('print')) {
+            response = "The print command tells the computer to display text on your screen (the console). In Python it's `print()`, in C# it's `Debug.Log()`, and in C++ it's `std::cout`. They all do the exact same thing!";
+        } else if (lowerText.includes('html') || lowerText.includes('tag')) {
+            response = "HTML relies on tags. The angle brackets `<` and `>` create the borders of the tag. For example, `<h1>` means 'Start a large heading here'. Always remember to close them with a slash like `</h1>` so the browser knows where to stop!";
+        } else if (lowerText.includes('error') || lowerText.includes('bug')) {
+            response = "Errors are totally normal! 90% of programming is fixing bugs. If you get a Syntax Error, it means you broke a grammar rule (like missing a comma, quote, or parenthesis). Always read the code character by character!";
+        } else if (currentLessonObj) {
+            response += `I see you're in the ${currentLessonObj.lang || 'coding'} module! `;
             if(currentLessonObj.hint) {
-                response += `Let me give you a push in the right direction: ${currentLessonObj.hint}`;
+                response += `Here is a context hint based on your current step: ${currentLessonObj.hint}`;
             } else {
-                response += "Make sure you read the instructions carefully. Syntax is usually the biggest issue!";
+                response += "Read the instructions above the playground. Pay close attention to exactly what the prompt asks for.";
             }
         } else {
-            response += "Choose a module on the map to start learning. If you have questions about a specific concept, just ask!";
+            response += "I am a built-in AI tutor! You can ask me how basic concepts work like 'Why do we use quotes?' or 'What are parentheses?'. Go ahead and try!";
         }
         
-        aiMsg.textContent = response;
+        aiMsg.innerHTML = response;
         chatHistory.appendChild(aiMsg);
         chatHistory.scrollTop = chatHistory.scrollHeight;
     }, 800);
