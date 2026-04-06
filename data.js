@@ -3,6 +3,7 @@ const curriculumData = [
         id: "module-html-basics",
         title: "HTML Grunderna",
         icon: "🌐",
+        usage: "Används för att bygga strukturen på i princip alla webbsidor och webbappar (tillsammans med CSS och JavaScript).",
         lessons: [
             {
                 id: "html-l1",
@@ -59,6 +60,7 @@ const curriculumData = [
         id: "module-python-basics",
         title: "Python för AI",
         icon: "🐍",
+        usage: "Används flitigt för AI (Artificiell Intelligens), Maskininlärning, Data Science och backend-servrar.",
         lessons: [
             {
                 id: "py-l1",
@@ -113,6 +115,53 @@ const curriculumData = [
                 validationRegex: /user\s*=\s*['"]Robot['"]/i,
                 successFeedback: "Perfekt! Du la precis Data-strängen 'Robot' inuti variablen 'user'. Det är grunden till all mjukvara!",
                 errorFeedback: "Nja, skriv det precis: user = 'Robot'"
+            }
+        ]
+    },
+    {
+        id: "module-csharp-unity",
+        title: "C# för Unity",
+        icon: "🎮",
+        usage: "Standard-språket för spelutveckling i Unity-motorn. Även populärt för företagsappar (Enterprise) via .NET.",
+        lessons: [
+            {
+                id: "cs-l1",
+                type: "info",
+                instruction: "Välkommen till Spelutveckling! 🎮\\n\\nHär ska vi kolla på C#, språket som används i Unity-motorn. Det är känt för att vara logiskt att lära sig och ha en extremt 'clean' kodstruktur.",
+            },
+            {
+                id: "cs-l2",
+                type: "mcq",
+                instruction: "Unity använder en särskild metod för att skriva ut meddelanden i spel-konsolen. Det liknar Python's 'print', men är specifikt för Unity. Vilket av dessa tror du det är?",
+                options: [
+                    "console.log('Hej')",
+                    "Debug.Log('Hej')",
+                    "echo 'Hej'"
+                ],
+                correctAnswer: 1,
+                feedback: "Snyggt! 'Debug.Log()' används jämnt i Unity för att felsöka din spelkod."
+            },
+            {
+                id: "cs-l3",
+                type: "mcq",
+                instruction: "C# är ett 'starkt typat' språk. Det betyder att när vi skapar en låda (variabel) måste vi berätta EXAKT vilken typ av data som får ligga i den. Vilken kod skapar ett heltal (integer) med värdet 100?",
+                options: [
+                    "health = 100",
+                    "int health = 100;",
+                    "text health = 100;"
+                ],
+                correctAnswer: 1,
+                feedback: "Perfekt! Du sa att datatypen är 'int' (heltal) och sen namnet. Notera också semikolonet ';' i slutet!"
+            },
+            {
+                id: "cs-l4",
+                type: "code",
+                lang: "csharp", 
+                instruction: "Din tur att koda C#! Var noga med strukturen, alla kodrader i C# måste avslutas med ett semikolon ( ; ). \\n\\nSkriv ett kommando som skriver ut: Hello Unity",
+                initialCode: "// Skriv din Unity-kod här\n",
+                validationRegex: /Debug\.Log\(['"]Hello Unity['"]\)\s*;/i,
+                successFeedback: "Fantastiskt! Du är på god väg att bygga nästa storspel.",
+                errorFeedback: "Skrev du: Debug.Log('Hello Unity') och GLÖMDE du semikolon ( ; ) på slutet?"
             }
         ]
     }

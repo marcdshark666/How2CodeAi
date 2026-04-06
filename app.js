@@ -104,13 +104,36 @@ function renderMap() {
         // All unlocked
         node.addEventListener('click', () => startModule(index));
 
+        const labelContainer = document.createElement('div');
+        labelContainer.style.display = 'flex';
+        labelContainer.style.alignItems = 'center';
+        labelContainer.style.gap = '8px';
+
         const label = document.createElement('div');
         label.textContent = mod.title;
         label.style.fontWeight = 'bold';
         label.style.color = 'var(--text-secondary)';
 
+        const infoBtn = document.createElement('button');
+        infoBtn.textContent = 'ℹ️';
+        infoBtn.title = 'Användningsområden';
+        infoBtn.style.background = 'none';
+        infoBtn.style.border = 'none';
+        infoBtn.style.cursor = 'pointer';
+        infoBtn.style.fontSize = '1.2rem';
+        infoBtn.style.transition = 'transform 0.2s';
+        infoBtn.onmouseover = () => infoBtn.style.transform = 'scale(1.2)';
+        infoBtn.onmouseout = () => infoBtn.style.transform = 'scale(1)';
+        infoBtn.addEventListener('click', (e) => {
+             e.stopPropagation();
+             alert(`Användningsområde för ${mod.title}:\n\n${mod.usage}`);
+        });
+
+        labelContainer.appendChild(label);
+        labelContainer.appendChild(infoBtn);
+
         nodeWrap.appendChild(node);
-        nodeWrap.appendChild(label);
+        nodeWrap.appendChild(labelContainer);
         mapContainer.appendChild(nodeWrap);
     });
 }
@@ -250,6 +273,27 @@ function renderCodeEditor(lesson) {
                  output = "<span style='color:var(--wrong-color);'>Inget utskrivet. Använd print()</span>";
             }
             outputArea.innerHTML = output || "Kördes utan utmatning.";
+        } else if (lesson.lang === 'csharp') {
+            let output = "";
+            let lines = code.split('\n');
+            let hasPrint = false;
+            for(let line of lines) {
+                if(line.includes("Debug.Log(")) {
+                    hasPrint = true;
+                    let match = line.match(/Debug\.Log\(['"](.*?)['"]\)/);
+                    if(match) output += match[1] + "<br/>";
+                } else if(line.includes("int ") || line.includes("string ") || line.includes("float ")) {
+                    output += "<span style='color:#64748b'>Variabel allokerad i minnet...</span><br/>";
+                }
+            }
+            // require semicolon
+            if(code.trim().length > 0 && !code.trim().endsWith(";")) {
+                 output += "<span style='color:var(--wrong-color);'>Kompileringsfel: Saknar semikolon (;) i slutet av raden!</span>";
+            } else if(!hasPrint && code.trim().length > 0) {
+                 output = (output || "") + "<span style='color:var(--wrong-color);'>Inget utskrivet. Använd Debug.Log()</span>";
+            }
+            
+            outputArea.innerHTML = output || "Kompilerad utan utmatning.";
         }
         
         // Validation logic
