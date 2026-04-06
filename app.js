@@ -532,4 +532,21 @@ function updateHearts() {
     heartsCount.textContent = appState.hearts;
 }
 
+function saveState() {
+    localStorage.setItem('how2codeai_state', JSON.stringify(appState));
+}
+
+function loadState() {
+    const saved = localStorage.getItem('how2codeai_state');
+    if (saved) {
+        try {
+            const parsed = JSON.parse(saved);
+            // Merge in case state structure changed
+            appState = { ...appState, ...parsed };
+        } catch(e) {
+            console.error("Failed to load state", e);
+        }
+    }
+}
+
 init();
