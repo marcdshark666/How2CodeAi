@@ -302,13 +302,16 @@ function renderCodeEditor(lesson) {
             let lines = code.split('\n');
             let hasPrint = false;
             for(let line of lines) {
-                if(line.includes("print(")) {
+                if(line.includes("Print(")) {
+                    output += "<span style='color:var(--wrong-color);'>NameError: name 'Print' is not defined. Did you mean: 'print'?</span><br/>";
+                }
+                else if(line.includes("print(")) {
                     hasPrint = true;
                     let match = line.match(/print\(['"](.*?)['"]\)/);
                     if(match) output += match[1] + "<br/>";
                 }
             }
-            if(!hasPrint && code.trim().length > 0 && !code.includes("=")) {
+            if(!hasPrint && code.trim().length > 0 && !code.includes("=") && !code.includes("Print(")) {
                  output = "<span style='color:var(--wrong-color);'>Nothing outputted. Use print()</span>";
             }
             outputArea.innerHTML = output || "Executed with no output.";
@@ -484,30 +487,72 @@ function sendChatMessage() {
         const lowerText = text.toLowerCase();
         let response = "";
         
-        // Advanced NLP Keywords
-        if (lowerText.includes('parenthes') || lowerText.includes('bracket')) {
-            response = "Ah, parentheses `()`! In programming, they usually denote a **Function Call**. For example, `print` is just a word, but `print()` tells the computer: 'Execute this function right now!'. Everything inside the parentheses is the data you are feeding the function.";
-        } else if (lowerText.includes('quote') || lowerText.includes('quotation')) {
-            response = "Quotes (`\"` or `'`) are used to create a **String**. A String is just plain text. Without quotes, the computer tries to read words like `hello` as code/variables and crashes. Quotes say: 'Hey, this is just normal human text, ignore it!'";
-        } else if (lowerText.includes('variab')) {
-            response = "A variable is like a digital cardboard box. You write `name = 'Alex'`. Now, whenever you type `print(name)`, the computer looks inside the box, sees 'Alex', and prints that instead! It's how computers remember things.";
-        } else if (lowerText.includes('semicolon') || lowerText.includes(';')) {
-            response = "The semicolon `;` is critical in C-family languages (C#, C++, Java). While humans use a period `.` to end a sentence, computers use a semicolon `;` to know exactly where an instruction ends.";
-        } else if (lowerText.includes('print')) {
-            response = "The print command tells the computer to display text on your screen (the console). In Python it's `print()`, in C# it's `Debug.Log()`, and in C++ it's `std::cout`. They all do the exact same thing!";
-        } else if (lowerText.includes('html') || lowerText.includes('tag')) {
-            response = "HTML relies on tags. The angle brackets `<` and `>` create the borders of the tag. For example, `<h1>` means 'Start a large heading here'. Always remember to close them with a slash like `</h1>` so the browser knows where to stop!";
-        } else if (lowerText.includes('error') || lowerText.includes('bug')) {
-            response = "Errors are totally normal! 90% of programming is fixing bugs. If you get a Syntax Error, it means you broke a grammar rule (like missing a comma, quote, or parenthesis). Always read the code character by character!";
-        } else if (currentLessonObj) {
-            response += `I see you're in the ${currentLessonObj.lang || 'coding'} module! `;
-            if(currentLessonObj.hint) {
-                response += `Here is a context hint based on your current step: ${currentLessonObj.hint}`;
+        // Grab code from editor to do AI analysis
+        let editorCode = "";
+        if (currentLessonObj && currentLessonObj.type === 'code') {
+            const textarea = document.querySelector('.code-textarea');
+            if (textarea) editorCode = textarea.value;
+        }
+        
+        // 1. Check if user is asking for debugging / error checking
+        if (lowerText.includes('wrong') || lowerText.includes('fel') || lowerText.includes('error') || lowerText.includes('why') || lowerText.includes('varför') || lowerText.includes('hjälp') || lowerText.includes('help')) {
+            if (currentLessonObj && currentLessonObj.type === 'code' && editorCode.trim().length > 0) {
+                let codeLower = editorCode.toLowerCase();
+                response = "Låt oss analysera din kod steg-för-steg! 🕵️‍♂️<br/><br/>";
+                
+                let foundError = false;
+                if (currentLessonObj.lang === 'python') {
+                    if (editorCode.includes("Print(") || editorCode.includes("PRINT(")) {
+                        response += "1. **Stor Bokstav**: Du skrev `Print` med en stor bokstav. Python är helt skiftlägeskänsligt (Case Sensitive). Datorn vet inte vad 'Print' är, den förstår bara exakt `print` med små bokstäver.<br/><br/>";
+                        foundError = true;
+                    }
+                    if (editorCode.includes("print ") && !editorCode.includes("(")) {
+                        response += "2. **Parenteser Saknas**: Du skrev `print`, men du glömde att använda parenteserna direkt efteråt. `print()` är en funktion som behöver parenteser som händer för att hålla din data.<br/><br/>";
+                        foundError = true;
+                    }
+                    if (!editorCode.includes('"') && !editorCode.includes("'") && codeLower.includes("hello")) {
+                        response += "3. **Citattecken Saknas**: Du försöker skriva ut vanlig text, men du glömde sätta citattecken `\"` eller `'` runt texten! Utan dem tror datorn att texten är programkod.<br/><br/>";
+                        foundError = true;
+                    }
+                }
+                else if (currentLessonObj.lang === 'csharp' || currentLessonObj.lang === 'cpp') {
+                    if (!editorCode.trim().endsWith(";")) {
+                        response += "1. **Semikolon Saknas**: Du glömde den absolut viktigaste regeln i detta språk! Varje mening måste avslutas med ett semikolon `;`. Titta i slutet av din rad.<br/><br/>";
+                        foundError = true;
+                    }
+                    if (currentLessonObj.lang === 'csharp' && codeLower.includes("debug.log") && !editorCode.includes("Debug.Log")) {
+                        response += "2. **Stora Bokstäver**: C# är skiftlägeskänsligt. Funktionen måste skrivas exakt `Debug.Log` (stort D och stort L).<br/><br/>";
+                        foundError = true;
+                    }
+                }
+                
+                if (!foundError) {
+                    response += "Bra, din syntax/grammatik ser faktiskt helt rätt ut! Felet kan istället vara att du inte exakt skrev den text lektionen bad om. Lektionen vill att koden ska valideras för exakt: `" + (currentLessonObj.validationRegex ? currentLessonObj.validationRegex.source.replace(/\\/g, '') : "korrekt resultat") + "`. Kolla extra noga efter mellanslag och stavfel i din sträng!";
+                }
             } else {
-                response += "Read the instructions above the playground. Pay close attention to exactly what the prompt asks for.";
+                 response = "Jag behöver se vad du försöker göra! Skriv kod i rutan så kan jag ge exakt steg-för-steg feedback.";
+            }
+        } 
+        // 2. Advanced NLP Keywords if they ask about concepts
+        else if (lowerText.includes('parenthes') || lowerText.includes('parentes') || lowerText.includes('bracket')) {
+            response = "Parenteser `()` markerar nästan alltid ett **Funktionsanrop**. Exempel: `print` är bara ordet print, men `print()` betyder 'Utför detta nu!'. Det innanför parentesen är informationen du ger till funktionen.";
+        } else if (lowerText.includes('quote') || lowerText.includes('citat')) {
+            response = "Citattecken (`\"` eller `'`) skyddar text. Utan dem tror datorn att du försöker köra kod, och kraschar. Citattecken säger till datorn: 'Läs detta som vanlig mäsnklig text.' Text kallas för en String.";
+        } else if (lowerText.includes('variab')) {
+            response = "En variabel är som en digital flyttkartong. Du bestämmer ett namn: `namn = 'Alex'`. Nästa gång du säger `print(namn)` så tittar datorn i lådan och skriver ut 'Alex'.";
+        } else if (lowerText.includes('semicolon') || lowerText.includes('semikolon') || lowerText.includes(';')) {
+            response = "Semikolon `;` är otroligt kritiskt i t.ex. C# och C++. Där vi människor använder en punkt `.` för att avsluta en mening, använder datorn semikolon för att veta exakt var instruktionen tar slut.";
+        } else if (lowerText.includes('print') || lowerText.includes('skriv')) {
+            response = "Funktionen `print()` skickar data från minnet till din skärm. I C# heter det dock `Debug.Log()` och i C++ `std::cout`. Allt har exakt samma syfte!";
+        } else if (currentLessonObj) {
+            response += `Du är på lektionen för ${currentLessonObj.lang || 'allmän kod'}. `;
+            if(currentLessonObj.hint) {
+                response += `Här är min djupa ledtråd: ${currentLessonObj.hint}`;
+            } else {
+                response += "Läs testet lugnt. Om du är osäker, fråga mig 'Vad är fel med min kod?' så analyserar jag djupt!";
             }
         } else {
-            response += "I am a built-in AI tutor! You can ask me how basic concepts work like 'Why do we use quotes?' or 'What are parentheses?'. Go ahead and try!";
+            response += "Jag är din AI-mentor! Fråga mig 'Vad är fel?' för stegvis genomgång, eller fråga om varför vi använder parenteser!";
         }
         
         aiMsg.innerHTML = response;
