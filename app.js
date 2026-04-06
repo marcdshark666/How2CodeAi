@@ -64,10 +64,12 @@ const feedbackIcon = document.getElementById('feedback-icon');
 const feedbackTitle = document.getElementById('feedback-title');
 const feedbackDesc = document.getElementById('feedback-desc');
 const btnContinue = document.getElementById('btn-continue');
+const btnHint = document.getElementById('btn-hint');
 
 // State Variables for Lesson
 let currentSelection = null;
 let currentLessonObj = null;
+let currentHintLevel = 0;
 
 // Initialization
 function init() {
@@ -294,6 +296,24 @@ function renderCodeEditor(lesson) {
             }
             
             outputArea.innerHTML = output || "Kompilerad utan utmatning.";
+        } else if (lesson.lang === 'cpp') {
+            let output = "";
+            let lines = code.split('\n');
+            let hasPrint = false;
+            for(let line of lines) {
+                if(line.includes("std::cout")) {
+                    hasPrint = true;
+                    let match = line.match(/std::cout\s*<<\s*['"](.*?)['"]/);
+                    if(match) output += match[1] + "<br/>";
+                }
+            }
+            if(code.trim().length > 0 && !code.trim().endsWith(";")) {
+                 output += "<span style='color:var(--wrong-color);'>Kompileringsfel: Saknar semikolon (;)!</span>";
+            } else if(!hasPrint && code.trim().length > 0) {
+                 output = (output || "") + "<span style='color:var(--wrong-color);'>Inget utskrivet. Använd std::cout << </span>";
+            }
+            
+            outputArea.innerHTML = output || "Kompilerad utan utmatning.";
         }
         
         // Validation logic
@@ -341,6 +361,28 @@ btnCheck.addEventListener('click', () => {
     }
 });
 
+btnHint.addEventListener('click', () => {
+    if (currentHintLevel === 0) {
+        // Show Hint
+        feedbackTitle.textContent = "Ledtråd 💡";
+        feedbackDesc.textContent = currentLessonObj.hint || "Läs frågan en gång till väldigt noga!";
+        btnHint.textContent = "Visa Svar & Förklaring";
+        currentHintLevel = 1;
+    } else if (currentHintLevel === 1) {
+        // Show Explanation
+        feedbackTitle.textContent = "Svar & Förklaring 📖";
+        let answerText = "";
+        if (currentLessonObj.type === 'mcq') {
+            answerText = currentLessonObj.options[currentLessonObj.correctAnswer];
+        } else if (currentLessonObj.type === 'code') {
+            answerText = currentLessonObj.validationRegex ? currentLessonObj.validationRegex.source.replace(/\\/g, '') : "Korrekt kodstruktur.";
+        }
+        feedbackDesc.innerHTML = `<strong>Rätt svar är:</strong> <br/><code>${answerText}</code><br/><br/><strong>Varför?</strong><br/>${currentLessonObj.explanation || "För att detta följer syntaxen för detta språk."}`;
+        btnHint.classList.add('hidden'); // No more help
+        currentHintLevel = 2;
+    }
+});
+
 btnContinue.addEventListener('click', () => {
     if (feedbackPanel.classList.contains('wrong')) {
          feedbackPanel.classList.add('hidden');
@@ -361,13 +403,22 @@ btnBack.addEventListener('click', () => {
 });
 
 function showFeedback(isCorrect, titleText, descText) {
+    currentHintLevel = 0;
     feedbackPanel.classList.remove('hidden', 'wrong');
+    btnHint.classList.add('hidden');
+    
     if (!isCorrect) {
         feedbackPanel.classList.add('wrong');
         feedbackIcon.innerHTML = '×';
         feedbackTitle.textContent = titleText;
         feedbackDesc.textContent = descText;
         btnContinue.textContent = "Försök igen";
+        
+        // Show hint button if hint is available
+        if (currentLessonObj.hint || currentLessonObj.explanation) {
+             btnHint.classList.remove('hidden');
+             btnHint.textContent = "💡 Ge mig en ledtråd";
+        }
     } else {
         feedbackIcon.innerHTML = '✓';
         feedbackTitle.textContent = titleText;

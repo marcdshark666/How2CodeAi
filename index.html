@@ -30,7 +30,10 @@
         <main id="view-map" class="view">
             <section class="hero-header">
                 <h1>Välkommen till How2CodeAi 🤖</h1>
-                <p>Din AI-drivna resa in i programmeringens värld!</p>
+                <p>Din resa in i programmeringens värld!</p>
+                <div style="margin-top: 15px; padding: 10px; background: rgba(100,108,255,0.2); border-radius: 10px; border: 1px solid var(--primary-color);">
+                    <small>💡 Klicka på ℹ️-ikonen bredvid språken för att se dess användningsområde!</small>
+                </div>
             </section>
             <div id="map-container" class="map-container">
                 <!-- Dynamically generated map nodes will go here -->
@@ -90,7 +93,10 @@
                 <h2 id="feedback-title">Grymt jobbat!</h2>
                 <p id="feedback-desc">Det var helt rätt.</p>
             </div>
-            <button id="btn-continue" class="btn-primary">Fortsätt</button>
+            <div class="feedback-actions">
+                <button id="btn-hint" class="btn-secondary hidden">💡 Ge mig en ledtråd</button>
+                <button id="btn-continue" class="btn-primary">Fortsätt</button>
+            </div>
         </div>
     </div>
 
