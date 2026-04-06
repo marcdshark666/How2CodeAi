@@ -560,7 +560,9 @@ function sendChatMessage() {
         }
         
         // 1. Check if user is asking for debugging / error checking
-        if (lowerText.includes('wrong') || lowerText.includes('fel') || lowerText.includes('error') || lowerText.includes('why') || lowerText.includes('varför') || lowerText.includes('hjälp') || lowerText.includes('help')) {
+        let isErrorCheck = lowerText.includes('wrong') || lowerText.includes('fel') || lowerText.includes('error') || lowerText.includes('why') || lowerText.includes('varför') || lowerText.includes('hjälp') || lowerText.includes('help') || lowerText.includes('rätt') || lowerText.includes('fungerar');
+        
+        if (isErrorCheck) {
             if (currentLessonObj && currentLessonObj.type === 'code' && editorCode.trim().length > 0) {
                 
                 let analysis = analyzeGenericSyntax(editorCode, currentLessonObj.lang);
@@ -575,26 +577,25 @@ function sendChatMessage() {
                      if(currentLessonObj.hint) response += `<br/><br/>**Mitt Djupaste Tips:** ${currentLessonObj.hint}`;
                 }
             } else {
-                 response = "Jag behöver se vad du försöker göra! Skriv kod i editorn till vänster, och fråga sedan mig om vad som är fel så skannar min hjärna rad för rad.";
+                 response = "Jag behöver se vad du försöker göra! Skriv kod i editorn till vänster, och fråga mig om 'det är rätt' eller 'vad som är fel' så skannar min hjärna koden direkt.";
             }
         } 
         // 2. Generic Knowledge Base Query (Handling all other programming questions)
         else {
             let answered = false;
             for (let item of knowledgeBase) {
-                // If any of the item's keywords exist in the user's text
-                if (item.keys.some(k => lowerText.includes(k))) {
+                // Use RegEx bounds \b to ensure we match WHOLE words. 
+                // That way, 'print' isn't mistakenly read as containing 'int'.
+                if (item.keys.some(k => new RegExp(`\\b${k}\\b`, 'i').test(lowerText))) {
                      response = "🤖 " + item.text;
                      answered = true;
                      break;
                 }
             }
             if (!answered) {
-                 if (currentLessonObj) {
-                     response = `Jag är en fullt utvecklad AI-utbildare! Om du fastnade, prova fråga mig: "Vad är fel med min kod i editorn?". Du kan också ställa allmänna frågor som: "Vad är en array?" eller "Varför använder vi parenteser?".`;
-                 } else {
-                     response = "Jag är How2CodeAis superhjärna. Ställ frågor till mig om grundläggande koncept! Vet du exempelvis vad en loop, funktion eller databas är? Fråga mig!";
-                 }
+                 // Fallback to Free Wikipedia API for general programming concepts!
+                 searchWikipediaConcept(text, aiMsg, chatHistory);
+                 return; // Stop here, since fetch is asynchronous
             }
         }
         
@@ -602,6 +603,42 @@ function sendChatMessage() {
         chatHistory.appendChild(aiMsg);
         chatHistory.scrollTop = chatHistory.scrollHeight;
     }, 800);
+}
+
+async function searchWikipediaConcept(query, aiMsgElement, chatHistoryElement) {
+    aiMsgElement.innerHTML = "Söker igenom min externa databas efter '" + query + "'... 🌐";
+    chatHistoryElement.appendChild(aiMsgElement);
+    chatHistoryElement.scrollTop = chatHistoryElement.scrollHeight;
+    
+    try {
+        let cleanQuery = encodeURIComponent(query + " programmering datavetenskap");
+        let res = await fetch(`https://sv.wikipedia.org/w/api.php?action=query&list=search&srsearch=${cleanQuery}&utf8=&format=json&origin=*`);
+        let data = await res.json();
+        
+        if (data.query && data.query.search && data.query.search.length > 0) {
+             let snippet = data.query.search[0].snippet;
+             aiMsgElement.innerHTML = `🤖 **Enligt databasen:**<br/> ...${snippet}... <br/><br/>*(Fråga mig gärna 'Vad är fel med min kod?' för live-hjälp)*`;
+        } else {
+             // Second try in English for better tech results
+             let cleanQueryEn = encodeURIComponent(query + " programming");
+             let resEn = await fetch(`https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=${cleanQueryEn}&utf8=&format=json&origin=*`);
+             let dataEn = await resEn.json();
+             
+             if (dataEn.query && dataEn.query.search && dataEn.query.search.length > 0) {
+                 let snippet = dataEn.query.search[0].snippet;
+                 aiMsgElement.innerHTML = `🤖 **Enligt globala databasen:**<br/> ...${snippet}... <br/><br/>*(Jag är expert på felsökning, skriv din kod och fråga 'Vad är felet?')*`;
+             } else {
+                 if (currentLessonObj) {
+                     aiMsgElement.innerHTML = `Bara lugn! Läs instruktionen ovan. Ett tips härifrån är: ${currentLessonObj.hint || 'försök identifiera vad koden har för mål.'} Fråga annars "Är min kod rätt?"`;
+                 } else {
+                     aiMsgElement.innerHTML = "Jag kunde inte hitta exakt det i min databas. Men jag är How2CodeAis superhjärna. Ställ frågor till mig om t.ex. en loop, funktion eller databas!";
+                 }
+             }
+        }
+    } catch(err) {
+         aiMsgElement.innerHTML = "Ledsen, mitt system kunde inte hämta förklaringen just nu. Låt oss fokusera på koden i editorn istället!";
+    }
+    chatHistoryElement.scrollTop = chatHistoryElement.scrollHeight;
 }
 
 btnSendChat.addEventListener('click', sendChatMessage);
