@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How2CodeAi - Learning to Code</title>
+    <!-- Modern Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <!-- Highlight.js for syntax highlighting -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/atom-one-dark.min.css">
+</head>
+<body>
+    <div id="app">
+        <!-- Top Navigation / Progress Bar -->
+        <header id="top-nav" class="hidden">
+            <button id="btn-back" class="icon-btn">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+            </button>
+            <div class="progress-bar-container">
+                <div id="progress-fill" class="progress-fill"></div>
+            </div>
+            <div class="hearts">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="#ff4b4b" stroke="#ff4b4b" stroke-width="2"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
+                <span id="hearts-count">3</span>
+            </div>
+        </header>
+
+        <!-- Main Screen: Course Map -->
+        <main id="view-map" class="view">
+            <section class="hero-header">
+                <h1>Välkommen till How2CodeAi 🤖</h1>
+                <p>Din AI-drivna resa in i programmeringens värld!</p>
+            </section>
+            <div id="map-container" class="map-container">
+                <!-- Dynamically generated map nodes will go here -->
+            </div>
+        </main>
+
+        <!-- Lesson Screen: Interactive Learning -->
+        <main id="view-lesson" class="view hidden">
+            <div class="lesson-content">
+                <div class="robot-mascot">
+                    <!-- Cute SVG Robot Mascot -->
+                    <svg class="robot-svg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                        <defs>
+                            <linearGradient id="robo-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#00e5ff;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#0077ff;stop-opacity:1" />
+                            </linearGradient>
+                        </defs>
+                        <!-- Body -->
+                        <path d="M 50,80 L 150,80 Q 160,80 160,90 L 160,160 Q 160,170 150,170 L 50,170 Q 40,170 40,160 L 40,90 Q 40,80 50,80 Z" fill="url(#robo-grad)" />
+                        <!-- Head -->
+                        <path d="M 60,30 L 140,30 Q 150,30 150,40 L 150,70 Q 150,80 140,80 L 60,80 Q 50,80 50,70 L 50,40 Q 50,30 60,30 Z" fill="#ffffff" />
+                        <!-- Eyes -->
+                        <rect x="70" y="45" width="20" height="20" rx="5" fill="#000" class="eye" />
+                        <rect x="110" y="45" width="20" height="20" rx="5" fill="#000" class="eye" />
+                        <!-- Antenna -->
+                        <line x1="100" y1="30" x2="100" y2="10" stroke="#ff4b4b" stroke-width="4" />
+                        <circle cx="100" cy="5" r="5" fill="#ffcd00" class="antenna-glow" />
+                        <!-- Arms -->
+                        <path d="M 30,100 Q 10,100 10,120 Q 10,140 20,150" fill="none" stroke="#ccc" stroke-width="8" stroke-linecap="round" />
+                        <path d="M 170,100 Q 190,100 190,120 Q 190,140 180,150" fill="none" stroke="#ccc" stroke-width="8" stroke-linecap="round" />
+                        <!-- Tracks (Wheels) -->
+                        <rect x="30" y="150" width="40" height="30" rx="10" fill="#333" />
+                        <rect x="130" y="150" width="40" height="30" rx="10" fill="#333" />
+                    </svg>
+                </div>
+                
+                <div class="speech-bubble" id="lesson-instruction">
+                    <!-- Instruction text goes here -->
+                </div>
+
+                <div id="interactive-area" class="interactive-area">
+                    <!-- Dynamically populated: MCQ or Code Editor -->
+                </div>
+            </div>
+
+            <!-- Bottom Action Bar -->
+            <footer class="bottom-action-bar">
+                <button id="btn-check" class="btn-primary" disabled>Kolla Svaret</button>
+            </footer>
+        </main>
+        
+        <!-- Feedback Overlay (Correct/Wrong) -->
+        <div id="feedback-panel" class="feedback-panel hidden">
+            <div id="feedback-icon" class="feedback-icon">✓</div>
+            <div class="feedback-text">
+                <h2 id="feedback-title">Grymt jobbat!</h2>
+                <p id="feedback-desc">Det var helt rätt.</p>
+            </div>
+            <button id="btn-continue" class="btn-primary">Fortsätt</button>
+        </div>
+    </div>
+
+    <!-- Script for syntax highlighting and markdown -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+    <script src="data.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
