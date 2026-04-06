@@ -481,21 +481,21 @@ function showFeedback(isCorrect, titleText, descText) {
 // ------------------------------------
 
 const knowledgeBase = [
-    { keys: ['loop', 'for', 'while', 'upprepa'], text: "Låt oss prata om Loopar! 🔄 En loop låter dig köra samma kod hundratals gånger utan att behöva skriva den igen. Det sparar enormt mycket tid." },
-    { keys: ['array', 'lista', 'list'], text: "En Array är som en lång byrå med massor av lådor där du kan lagra data i en viss ordning, istället för att ha 100 olika variabler." },
-    { keys: ['funktion', 'function', 'def', 'void'], text: "En Funktion är ett kodblock du skapar som utför en specifik uppgift. Du 'kallar' sedan på funktionen när du behöver den, som ett litet miniprogram." },
-    { keys: ['klass', 'class', 'objekt', 'object'], text: "Klasser (Classes) är som ritningar. Om du bygger ett bilspel kan du göra en Klass som heter 'Bil'. Då kan du bygga 100 bilar i spelet utan att skriva om allt!" },
-    { keys: ['variabel', 'var', 'let', 'const', 'variab'], text: "En variabel är som en minneslåda. Du bestämmer namnet: `score = 10`. Senare kan du öka den. Det är så applikationer kommer ihåg poäng!" },
-    { keys: ['if', 'else', 'villkor', 'condition'], text: "If-satser är hur program tar beslut! `If (player.health < 0) { GameOver(); }`. Den kollar OM något är sant, annars gör den något annat." },
-    { keys: ['string', 'sträng', 'text', 'quote', 'citat'], text: "En String är vanlig mänsklig text. Man skyddar den alltid med citattecken `\"Text här\"` så att programmet slutar tänka och inte förväxlar det med kod." },
-    { keys: ['int', 'integer', 'heltal'], text: "En Integer ('int') är ett heltal, t.ex. 5, 0 eller -100. Till skillnad från en sträng kan man lägga ihop dem med matematik: 5 + 5 = 10." },
-    { keys: ['boolean', 'bool', 'sant', 'falskt', 'true', 'false'], text: "En Boolean är den renaste formen av data. Den kan bara vara två saker: True (Sant) eller False (Falskt). Datorer är byggda av miljarder små Booleans!" },
-    { keys: ['api', 'fetch', 'nätverk'], text: "Ett API är en bro mellan program. T.ex. om din app vill veta vädret, frågar den SMHI:s API. 'Har du vädret i Stockholm?' så svarar servern med sin data." },
-    { keys: ['algoritm', 'algorithm'], text: "En algoritm är helt enkelt en beskrivning steg-för-steg för hur man löser ett problem. Precis som ett kakrecept, fast för datorn!" },
-    { keys: ['databas', 'database', 'sql'], text: "En databas är platsen där vi sparar data permanent (som en jättestor Excel-fil på en säker server). Används för att lagra konton och sparfiler." },
-    { keys: ['semicolon', 'semikolon', ';'], text: "Semikolon `;` är otroligt kritiskt i t.ex. C# och C++. Där vi människor använder en punkt `.` för att avsluta en mening, använder datorn semikolon för att veta var meningen tar slut." },
-    { keys: ['print', 'skriv', 'cout', 'log'], text: "I Python skriver vi `print()`, i C# skriver vi `Debug.Log()` och i C++ `std::cout`. Syftet: Att skicka text ut ur datorns system ut till skärmen i ditt ansikte!" },
-    { keys: ['parenthes', 'parentes', 'bracket'], text: "Parenteser `()` markerar nästan alltid ett **Funktionsanrop**. `print` är bara ordet print, men `print()` betyder 'Utför denna handling nu!'." }
+    { keys: ['loop', 'for', 'while', 'repet', 'repeat'], text: "Let's talk about Loops! 🔄 A loop allows you to run the exact same code hundreds of times without having to type it out manually. It saves an enormous amount of time." },
+    { keys: ['array', 'lista', 'list'], text: "An Array is like a large cabinet with many numbered drawers where you can store data in a specific order, instead of declaring 100 individual variables." },
+    { keys: ['funktion', 'function', 'def', 'void'], text: "A Function is a block of code you build that performs a specific task. You 'call' the function later whenever you need it, rather than repeating code." },
+    { keys: ['klass', 'class', 'objekt', 'object'], text: "Classes are like blueprints. If you build a racing game, you can make a Class called 'Car'. Then you can construct 100 car objects from that single blueprint!" },
+    { keys: ['variabel', 'var', 'let', 'const', 'variable'], text: "A variable is like a digital storage box. You name it: `score = 10`. Later, you can increase it. This is how programs remember data like health points or names." },
+    { keys: ['if', 'else', 'villkor', 'condition'], text: "If-statements are how programs make decisions! `If (player.health < 0) { GameOver(); }`. It checks IF something is true, otherwise it does something else." },
+    { keys: ['string', 'sträng', 'text', 'quote', 'citat'], text: "A String is simply text meant for humans to read. You must always protect it with quotes `\"Text here\"` so the program stops reading it as code and doesn't crash." },
+    { keys: ['int', 'integer', 'heltal'], text: "An Integer ('int') is a whole number, e.g. 5, 0 or -100. Unlike strings, you can do math with them: 5 + 5 = 10." },
+    { keys: ['boolean', 'bool', 'sant', 'falskt', 'true', 'false'], text: "A Boolean is the purest form of data. It can only hold two states: True or False. Computers are fundamentally built from billions of tiny Booleans!" },
+    { keys: ['api', 'fetch', 'nätverk', 'network'], text: "An API is a bridge between different programs. For example, if your app wants the weather, it asks a meteorological API. 'Do you have the weather in London?' and the server replies with data." },
+    { keys: ['algoritm', 'algorithm'], text: "An algorithm is simply a step-by-step set of instructions for solving a problem. Just like a recipe for baking a cake, but for a computer!" },
+    { keys: ['databas', 'database', 'sql'], text: "A database is where we safely and permanently store data (like a giant, secure Excel spreadsheet on a server). We use it to save user accounts, passwords, and game progress." },
+    { keys: ['semicolon', 'semikolon', ';'], text: "The semicolon `;` is incredibly critical in C# and C++. Where humans use a period `.` to end a sentence, the computer requires a semicolon to know exactly where the instruction stops." },
+    { keys: ['print', 'skriv', 'cout', 'log'], text: "In Python we use `print()`, in C# we use `Debug.Log()`, and in C++ it's `std::cout`. The purpose: To send text out from the computer's memory to the screen layout!" },
+    { keys: ['parenthes', 'parentes', 'bracket'], text: "Parentheses `()` almost always mark a **Function Call**. `print` is just the word print, but `print()` means 'Execute this action right now!' with whatever is inside the parentheses." }
 ];
 
 function analyzeGenericSyntax(code, lang) {
@@ -504,37 +504,37 @@ function analyzeGenericSyntax(code, lang) {
     // Check balanced quotes
     let doubleQuotes = (code.match(/"/g) || []).length;
     let singleQuotes = (code.match(/'/g) || []).length;
-    if (doubleQuotes % 2 !== 0) feedback.push("• Ojämnt antal dubbla citattecken `\"`. Du har öppnat en sträng men inte stängt den (eller tvärtom).");
-    if (singleQuotes % 2 !== 0) feedback.push("• Ojämnt antal enkla citattecken `'`. Citattecken kommer i par!");
+    if (doubleQuotes % 2 !== 0) feedback.push("• Uneven amount of double quotes `\"`. You opened a string but never closed it (or vice versa).");
+    if (singleQuotes % 2 !== 0) feedback.push("• Uneven amount of single quotes `'`. Quotes must always come in pairs!");
     
     // Check balanced parentheses
     let openParen = (code.match(/\(/g) || []).length;
     let closeParen = (code.match(/\)/g) || []).length;
-    if (openParen > closeParen) feedback.push("• En parentes öppnades `(` men stängdes aldrig `)`. Detta får datorn att vänta på instruktonen för evigt!");
-    if (closeParen > openParen) feedback.push("• Du har för många slutparenteser `)`. En parentes verkar vara överskott.");
+    if (openParen > closeParen) feedback.push("• A parenthesis was opened `(` but never closed `)`. This causes the computer to wait for the instruction forever!");
+    if (closeParen > openParen) feedback.push("• You have more closing parentheses `)` than opening ones. You must delete the extra ones.");
     
     // Specific Language Rule: Semicolons
     if (lang === 'csharp' || lang === 'cpp') {
         let codeTrimmed = code.trim();
         if (codeTrimmed.length > 0 && !codeTrimmed.endsWith(";") && !codeTrimmed.endsWith("}") && !codeTrimmed.startsWith("//")) {
-            feedback.push("• Typiskt fel: C# och C++ kräver absolut att varje regelrätt linje kod avslutas med ett semikolon `;` (Viktigaste regeln!)");
+            feedback.push("• Common Error: C# and C++ strictly require every instruction statement to end with a semicolon `;` (The golden rule!)");
         }
     }
     
     // Specific Language Rule: Capitalization
     if (lang === 'python') {
          if (code.includes("Print(") || code.includes("PRINT(")) {
-             feedback.push("• Python är extremt skiftlägeskänsligt. Det finns inget kommando som heter 'Print'. Det måste vara helt små bokstäver: `print`.");
+             feedback.push("• Python is strictly case-sensitive. There is no built-in command named 'Print'. It must be entirely lowercase: `print`.");
          }
          let openSquig = (code.match(/\{/g) || []).length;
-         if (openSquig > 0) feedback.push("• Info: Vanligtvis används inte måsvingar `{...}` för kodblock i Python. Python använder 'indents' (mellanslag/tab) istället!");
+         if (openSquig > 0) feedback.push("• Tip: Typically, curly brackets `{...}` are not used for code blocks in Python. Python relies on 'indents' (spaces/tabs) instead!");
     } else if (lang === 'csharp') {
          if (code.toLowerCase().includes("debug.log") && !code.includes("Debug.Log")) {
-             feedback.push("• C# är känsligt för stora bokstäver. Debug Logger funktionen stavas `Debug.Log`. Annars ser den inte funktionen.");
+             feedback.push("• C# is case-sensitive. The Unity console logger function is specifically spelled `Debug.Log`. Otherwise, the system can't see the function.");
          }
     } else if (lang === 'cpp') {
          if (code.toLowerCase().includes("cout") && !code.includes("std::cout")) {
-             feedback.push("• Du måste anropa C++ standardbiblioteket för terminalutmatning med små bokstäver: `std::cout`.");
+             feedback.push("• When interacting with the C++ standard library terminal, you must use lowercase letters: `std::cout`.");
          }
     }
     
@@ -577,24 +577,25 @@ function sendChatMessage() {
         }
         
         // 1. Check if user is asking for debugging / error checking
-        let isErrorCheck = lowerText.includes('wrong') || lowerText.includes('fel') || lowerText.includes('error') || lowerText.includes('why') || lowerText.includes('varför') || lowerText.includes('hjälp') || lowerText.includes('help') || lowerText.includes('rätt') || lowerText.includes('fungerar');
+        let isErrorCheck = lowerText.includes('wrong') || lowerText.includes('error') || lowerText.includes('why') || lowerText.includes('fix') || lowerText.includes('help') || lowerText.includes('correct') || lowerText.includes('work');
         
         if (isErrorCheck) {
             if (currentLessonObj && currentLessonObj.type === 'code' && editorCode.trim().length > 0) {
                 
                 let analysis = analyzeGenericSyntax(editorCode, currentLessonObj.lang);
+                let langName = currentLessonObj.lang === 'csharp' ? "C#" : (currentLessonObj.lang === 'cpp' ? "C++" : "Python");
                 
-                response = "Jag låter min *Advanced Local Brain* skanna koden i inmatningsrutan... 🕵️‍♂️<br/><br/>";
+                response = `I am using my *Advanced Local Brain* to scan the **${langName}** code you wrote in the editor exactly as it is... 🕵️‍♂️<br/><br/>`;
                 
                 if (analysis.length > 0) {
-                     response += "Bingo! Jag hittade några grammatiska syntax-fel som orsakar systemkrascher:<br/><br/>" + analysis.join("<br/><br/>");
+                     response += "Bingo! I found some critical syntax/grammar errors that will crash your code:<br/><br/>" + analysis.join("<br/><br/>");
                 } else {
-                     response += "Intressant. Din grammatik/syntax är faktiskt oklanderlig! Inga missade parenteser eller citattecken, och allt följer språkets kompilatorregler.<br/><br/>";
-                     response += "Men om spelet säger att du har fel, är det förmodligen för att din kod gör sitt jobb *men inte* vad lektionen bad om! Kontrollera texten noga så det inte är ett litet stavfel i det du blev fraggad att tillverka.";
-                     if(currentLessonObj.hint) response += `<br/><br/>**Mitt Djupaste Tips:** ${currentLessonObj.hint}`;
+                     response += "Interesting. Your grammar and syntax are actually flawless! No missing parentheses, quotes, or semicolons. The compiler is happy.<br/><br/>";
+                     response += "If the system still says you are wrong, it's likely because your code doesn't output *exactly* what the lesson asked for. Check for tiny typos in the string!";
+                     if(currentLessonObj.hint) response += `<br/><br/>**My Deep Hint for this specific level:** ${currentLessonObj.hint}`;
                 }
             } else {
-                 response = "Jag behöver se vad du försöker göra! Skriv kod i editorn till vänster, och fråga mig om 'det är rätt' eller 'vad som är fel' så skannar min hjärna koden direkt.";
+                 response = "I need to see what you're doing! Write some code in the editor, and ask me if it's correct or what is wrong. My brain will scan it live without you needing to copy and paste!";
             }
         } 
         // 2. Generic Knowledge Base Query (Handling all other programming questions)
@@ -623,37 +624,27 @@ function sendChatMessage() {
 }
 
 async function searchWikipediaConcept(query, aiMsgElement, chatHistoryElement) {
-    aiMsgElement.innerHTML = "Söker igenom min externa databas efter '" + query + "'... 🌐";
+    aiMsgElement.innerHTML = "Searching my external global database for '" + query + "'... 🌐";
     chatHistoryElement.appendChild(aiMsgElement);
     chatHistoryElement.scrollTop = chatHistoryElement.scrollHeight;
     
     try {
-        let cleanQuery = encodeURIComponent(query + " programmering datavetenskap");
-        let res = await fetch(`https://sv.wikipedia.org/w/api.php?action=query&list=search&srsearch=${cleanQuery}&utf8=&format=json&origin=*`);
+        let cleanQuery = encodeURIComponent(query + " programming computer science");
+        let res = await fetch(`https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=${cleanQuery}&utf8=&format=json&origin=*`);
         let data = await res.json();
         
         if (data.query && data.query.search && data.query.search.length > 0) {
              let snippet = data.query.search[0].snippet;
-             aiMsgElement.innerHTML = `🤖 **Enligt databasen:**<br/> ...${snippet}... <br/><br/>*(Fråga mig gärna 'Vad är fel med min kod?' för live-hjälp)*`;
+             aiMsgElement.innerHTML = `🤖 **According to the global database:**<br/> ...${snippet}... <br/><br/>*(You can always ask me 'What is wrong with my code?' and I'll look directly at your editor!)*`;
         } else {
-             // Second try in English for better tech results
-             let cleanQueryEn = encodeURIComponent(query + " programming");
-             let resEn = await fetch(`https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=${cleanQueryEn}&utf8=&format=json&origin=*`);
-             let dataEn = await resEn.json();
-             
-             if (dataEn.query && dataEn.query.search && dataEn.query.search.length > 0) {
-                 let snippet = dataEn.query.search[0].snippet;
-                 aiMsgElement.innerHTML = `🤖 **Enligt globala databasen:**<br/> ...${snippet}... <br/><br/>*(Jag är expert på felsökning, skriv din kod och fråga 'Vad är felet?')*`;
+             if (currentLessonObj) {
+                 aiMsgElement.innerHTML = `Relax! Read the instructions above. Here's a tip: ${currentLessonObj.hint || 'Try to identify the goal of the code.'} Remember, I can see your screen, just ask me "Is my code right?"`;
              } else {
-                 if (currentLessonObj) {
-                     aiMsgElement.innerHTML = `Bara lugn! Läs instruktionen ovan. Ett tips härifrån är: ${currentLessonObj.hint || 'försök identifiera vad koden har för mål.'} Fråga annars "Är min kod rätt?"`;
-                 } else {
-                     aiMsgElement.innerHTML = "Jag kunde inte hitta exakt det i min databas. Men jag är How2CodeAis superhjärna. Ställ frågor till mig om t.ex. en loop, funktion eller databas!";
-                 }
+                 aiMsgElement.innerHTML = "I couldn't find that exact term in my database. But I'm the How2CodeAi superbrain! You can ask me about loops, arrays, databases, APIs, etc!";
              }
         }
     } catch(err) {
-         aiMsgElement.innerHTML = "Ledsen, mitt system kunde inte hämta förklaringen just nu. Låt oss fokusera på koden i editorn istället!";
+         aiMsgElement.innerHTML = "Sorry, my system could not fetch the explanation right now. Let's focus on the active editor instead!";
     }
     chatHistoryElement.scrollTop = chatHistoryElement.scrollHeight;
 }
