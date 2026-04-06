@@ -83,6 +83,30 @@ const chatInput = document.getElementById('chat-input');
 const chatHistory = document.getElementById('chat-history');
 const difficultyModal = document.getElementById('difficulty-modal');
 const btnDiffs = document.querySelectorAll('.btn-diff');
+const btnSettings = document.getElementById('btn-settings');
+
+// Difficulty / Settings Selection
+btnDiffs.forEach(btn => {
+    btn.addEventListener('click', (e) => {
+        const hearts = parseInt(e.currentTarget.getAttribute('data-hearts'));
+        appState.maxHearts = hearts;
+        appState.hearts = hearts;
+        saveState();
+        difficultyModal.classList.add('hidden');
+        if (viewMap.classList.contains('hidden')) {
+            // If they were doing a lesson, they just reset their hearts. Update ui.
+            updateHearts();
+        } else {
+            init(); // Re-run init if we are on map
+        }
+    });
+});
+
+if (btnSettings) {
+    btnSettings.addEventListener('click', () => {
+        difficultyModal.classList.remove('hidden');
+    });
+}
 
 // Initialization
 function init() {
@@ -90,16 +114,6 @@ function init() {
     
     if (!appState.maxHearts) {
         difficultyModal.classList.remove('hidden');
-        btnDiffs.forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                const hearts = parseInt(e.currentTarget.getAttribute('data-hearts'));
-                appState.maxHearts = hearts;
-                appState.hearts = hearts;
-                saveState();
-                difficultyModal.classList.add('hidden');
-                init(); // Re-run init now that we have hearts
-            });
-        });
         return; // Wait for difficulty selection
     }
 
