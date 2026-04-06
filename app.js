@@ -83,7 +83,7 @@ const chatInput = document.getElementById('chat-input');
 const chatHistory = document.getElementById('chat-history');
 const difficultyModal = document.getElementById('difficulty-modal');
 const btnDiffs = document.querySelectorAll('.btn-diff');
-const btnSettings = document.getElementById('btn-settings');
+const btnSettingsFloating = document.getElementById('btn-settings-floating');
 
 // Difficulty / Settings Selection
 btnDiffs.forEach(btn => {
@@ -102,8 +102,8 @@ btnDiffs.forEach(btn => {
     });
 });
 
-if (btnSettings) {
-    btnSettings.addEventListener('click', () => {
+if (btnSettingsFloating) {
+    btnSettingsFloating.addEventListener('click', () => {
         difficultyModal.classList.remove('hidden');
     });
 }
@@ -131,6 +131,7 @@ function renderMap() {
     viewMap.classList.remove('hidden');
     viewLesson.classList.add('hidden');
     topNav.classList.add('hidden');
+    if(btnSettingsFloating) btnSettingsFloating.style.display = 'flex';
     
     mapContainer.innerHTML = '';
     
@@ -189,15 +190,17 @@ function renderMap() {
     });
 }
 
-function startModule(index) {
+function startModule(modIndex) {
     initAudio();
-    appState.currentModuleIndex = index;
+    appState.currentModuleIndex = modIndex;
     appState.currentLessonIndex = 0;
     appState.progress = 0;
+    saveState();
     
     viewMap.classList.add('hidden');
     viewLesson.classList.remove('hidden');
     topNav.classList.remove('hidden');
+    if(btnSettingsFloating) btnSettingsFloating.style.display = 'none';
     
     updateProgress();
     loadLesson();

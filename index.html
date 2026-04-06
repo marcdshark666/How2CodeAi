@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>How2CodeAi - Learning to Code</title>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=6.6">
+    <link rel="stylesheet" href="style.css?v=6.7">
     <!-- Highlight.js for syntax highlighting -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/atom-one-dark.min.css">
 </head>
@@ -49,10 +49,7 @@
 
         <!-- Main Screen: Course Map -->
         <main id="view-map" class="view">
-            <section class="hero-header" style="position: relative;">
-                <button id="btn-settings" class="icon-btn" style="position: absolute; top: 15px; right: 15px;" title="Change Difficulty">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
-                </button>
+            <section class="hero-header">
                 <h1>Welcome to How2CodeAi 🤖</h1>
                 <p>Your journey into the world of programming!</p>
                 <div style="margin-top: 15px; padding: 10px; background: rgba(100,108,255,0.2); border-radius: 10px; border: 1px solid var(--primary-color);">
@@ -128,6 +125,11 @@
             🤖 Ask AI
         </button>
 
+        <!-- Settings Floating Button -->
+        <button id="btn-settings-floating" class="btn-settings-floating" title="Ändra svårighetsgrad">
+            ⚙️ 
+        </button>
+
         <!-- Ask AI Chat Modal -->
         <div id="ai-chat-modal" class="ai-chat-modal hidden">
             <div class="chat-header">
@@ -146,7 +148,7 @@
 
     <!-- Script for syntax highlighting and markdown -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
-    <script src="data.js?v=6.6"></script>
-    <script src="app.js?v=6.6"></script>
+    <script src="data.js?v=6.7"></script>
+    <script src="app.js?v=6.7"></script>
 </body>
 </html>
