@@ -6,6 +6,46 @@ const appState = {
     completedModules: []
 };
 
+// Sound Synthesizer (Web Audio API)
+const AudioContext = window.AudioContext || window.webkitAudioContext;
+let audioCtx;
+let audioInitialized = false;
+
+function initAudio() {
+    if(!audioInitialized && AudioContext) {
+        audioCtx = new AudioContext();
+        audioInitialized = true;
+    }
+}
+
+function playSound(type) {
+    if(!audioCtx) return;
+    const osc = audioCtx.createOscillator();
+    const gainNode = audioCtx.createGain();
+    
+    osc.connect(gainNode);
+    gainNode.connect(audioCtx.destination);
+    
+    if (type === 'correct') {
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(523.25, audioCtx.currentTime);     // C5
+        osc.frequency.exponentialRampToValueAtTime(1046.50, audioCtx.currentTime + 0.1); // C6
+        gainNode.gain.setValueAtTime(0.3, audioCtx.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.3);
+    } else if (type === 'wrong') {
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(200, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(100, audioCtx.currentTime + 0.3);
+        gainNode.gain.setValueAtTime(0.3, audioCtx.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.4);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.4);
+    }
+}
+
+
 // DOM Elements
 const viewMap = document.getElementById('view-map');
 const viewLesson = document.getElementById('view-lesson');
@@ -31,6 +71,8 @@ let currentLessonObj = null;
 
 // Initialization
 function init() {
+    // Add interactions to map
+    document.addEventListener('click', () => { initAudio(); }, {once: true});
     renderMap();
 }
 
@@ -53,17 +95,14 @@ function renderMap() {
         node.className = 'level-node';
         if (appState.completedModules.includes(index)) {
             node.classList.add('completed');
-        } else if (index === appState.currentModuleIndex) {
-            node.classList.add('active');
         } else {
-            node.style.opacity = '0.5';
-            node.style.cursor = 'not-allowed';
+            // All modules unlocked as requested
+            node.classList.add('active');
         }
         node.innerHTML = mod.icon;
 
-        if (index <= appState.currentModuleIndex || appState.completedModules.includes(index)) {
-             node.addEventListener('click', () => startModule(index));
-        }
+        // All unlocked
+        node.addEventListener('click', () => startModule(index));
 
         const label = document.createElement('div');
         label.textContent = mod.title;
@@ -77,6 +116,7 @@ function renderMap() {
 }
 
 function startModule(index) {
+    initAudio();
     appState.currentModuleIndex = index;
     appState.currentLessonIndex = 0;
     appState.progress = 0;
@@ -99,11 +139,6 @@ function loadLesson() {
         // Module Complete!
         if (!appState.completedModules.includes(appState.currentModuleIndex)) {
             appState.completedModules.push(appState.currentModuleIndex);
-            
-            // Unlock next module
-            if (appState.currentModuleIndex + 1 < curriculumData.length) {
-                appState.currentModuleIndex++;
-            }
         }
         renderMap();
         return;
@@ -120,6 +155,7 @@ function loadLesson() {
 
     if (currentLessonObj.type === 'mcq') {
         renderMCQ(currentLessonObj);
+        btnCheck.classList.add('hidden'); // Hide check button for MCQ, we auto-advance
     } else if (currentLessonObj.type === 'info') {
         btnCheck.disabled = false;
         btnCheck.textContent = "Förstått!";
@@ -130,7 +166,6 @@ function loadLesson() {
 }
 
 function renderMCQ(lesson) {
-    btnCheck.textContent = "Kolla Svaret";
     const optionsContainer = document.createElement('div');
     optionsContainer.className = 'mcq-options';
     
@@ -139,10 +174,17 @@ function renderMCQ(lesson) {
         btn.className = 'mcq-option';
         btn.textContent = opt;
         btn.addEventListener('click', () => {
-            document.querySelectorAll('.mcq-option').forEach(el => el.classList.remove('selected'));
-            btn.classList.add('selected');
             currentSelection = idx;
-            btnCheck.disabled = false;
+            // Auto-check MCQ
+            if (currentSelection === currentLessonObj.correctAnswer) {
+                playSound('correct');
+                showFeedback(true, "Rätt!", currentLessonObj.feedback);
+            } else {
+                playSound('wrong');
+                appState.hearts--;
+                updateHearts();
+                showFeedback(false, "Fel svar", "Det var tyvärr fel. Men du lär dig av dina misstag!");
+            }
         });
         optionsContainer.appendChild(btn);
     });
@@ -172,13 +214,14 @@ function renderCodeEditor(lesson) {
     const outputArea = document.createElement('div');
     outputArea.className = 'live-output';
     outputArea.id = 'live-output';
-    outputArea.innerHTML = '<span style="color: #ccc;">(Resultatet visas här)</span>';
+    outputArea.innerHTML = '<span style="color: #64748b;">(Resultatet visas här - Console)</span>';
     
     runBtn.addEventListener('click', () => {
         const code = textarea.value;
-        currentSelection = code; // Save code as answer
+        currentSelection = code;
         
-        // Live execution mockup
+        let valid = false;
+        
         if (lesson.lang === 'html') {
             const iframe = document.createElement('iframe');
             iframe.className = 'live-iframe';
@@ -186,10 +229,9 @@ function renderCodeEditor(lesson) {
             outputArea.appendChild(iframe);
             const doc = iframe.contentWindow.document;
             doc.open();
-            doc.write(code);
+            doc.write(`<body style="font-family:sans-serif; padding:10px;">${code}</body>`);
             doc.close();
         } else if (lesson.lang === 'python') {
-            // Very simple Mock execution for python
             let output = "";
             let lines = code.split('\n');
             let hasPrint = false;
@@ -199,15 +241,40 @@ function renderCodeEditor(lesson) {
                     // match print('hello') or print("hello")
                     let match = line.match(/print\(['"](.*?)['"]\)/);
                     if(match) output += match[1] + "<br/>";
+                } else if(line.includes("=")) {
+                    // super dummy mock for variables
+                    output += "<span style='color:#64748b'>Variabel sparad i minnet...</span><br/>";
                 }
             }
-            if(!hasPrint && code.trim().length > 0) {
-                 output = "<span style='color:red;'>Inget utskrivet. Använd print()</span>";
+            if(!hasPrint && code.trim().length > 0 && !code.includes("=")) {
+                 output = "<span style='color:var(--wrong-color);'>Inget utskrivet. Använd print()</span>";
             }
             outputArea.innerHTML = output || "Kördes utan utmatning.";
         }
         
-        verifyCodeSyntax(code, lesson.validationRegex);
+        // Validation logic
+        if (lesson.validationPattern) {
+             const regex = new RegExp(lesson.validationPattern, 'i');
+             if(regex.test(code)) valid = true;
+        } else if (lesson.validationLogic) {
+             // eval basic validation logic provided in data.js
+             try {
+                valid = lesson.validationLogic(code);
+             } catch(e) { valid = false; }
+        } else {
+             // Fallback regex
+             valid = lesson.validationRegex.test(code);
+        }
+
+        if (valid) {
+            playSound('correct');
+            showFeedback(true, "Strålande koder!", currentLessonObj.successFeedback || "Koden fungerade perfekt.");
+        } else {
+            playSound('wrong');
+            appState.hearts--;
+            updateHearts();
+            showFeedback(false, "Nja, inte riktigt...", currentLessonObj.errorFeedback || "Kolla koden en gång till!");
+        }
     });
     
     runBtnContainer.appendChild(runBtn);
@@ -219,36 +286,18 @@ function renderCodeEditor(lesson) {
     interactiveArea.appendChild(outputArea);
 }
 
-function verifyCodeSyntax(code, regex) {
-    if (regex.test(code)) {
-        showFeedback(true, "Strålande!", currentLessonObj.successFeedback || "Koden fungerade perfekt.");
-    } else {
-        appState.hearts--;
-        updateHearts();
-        showFeedback(false, "Nja, inte riktigt...", "Försök igen! Kolla noga på instruktionerna.");
-    }
-}
 
 btnCheck.addEventListener('click', () => {
+    // Info view check
     if (currentLessonObj.type === 'info') {
+        playSound('correct');
         appState.currentLessonIndex++;
         loadLesson();
         return;
     }
-    
-    if (currentLessonObj.type === 'mcq') {
-        if (currentSelection === currentLessonObj.correctAnswer) {
-            showFeedback(true, "Rätt!", currentLessonObj.feedback);
-        } else {
-            appState.hearts--;
-            updateHearts();
-            showFeedback(false, "Fel svar", "Det var tyvärr fel. Men du lär dig av dina misstag!");
-        }
-    }
 });
 
 btnContinue.addEventListener('click', () => {
-    // Only advance if it was correct (or if it's info)
     if (feedbackPanel.classList.contains('wrong')) {
          feedbackPanel.classList.add('hidden');
          if(appState.hearts <= 0) {
@@ -259,7 +308,6 @@ btnContinue.addEventListener('click', () => {
          }
          return;
     }
-    // Correct
     appState.currentLessonIndex++;
     loadLesson();
 });
@@ -286,8 +334,6 @@ function showFeedback(isCorrect, titleText, descText) {
 
 function updateProgress() {
     progressFill.style.width = appState.progress + '%';
-    
-    // Set progress bar to 100% when completing the last lesson
     if(appState.currentLessonIndex === curriculumData[appState.currentModuleIndex].lessons.length - 1 && document.getElementById('feedback-panel') && !document.getElementById('feedback-panel').classList.contains('hidden') && !document.getElementById('feedback-panel').classList.contains('wrong')) {
          progressFill.style.width = '100%';
     }
@@ -297,5 +343,4 @@ function updateHearts() {
     heartsCount.textContent = appState.hearts;
 }
 
-// Start
 init();
