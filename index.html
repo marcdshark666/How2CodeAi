@@ -29,10 +29,10 @@
         <!-- Main Screen: Course Map -->
         <main id="view-map" class="view">
             <section class="hero-header">
-                <h1>Välkommen till How2CodeAi 🤖</h1>
-                <p>Din resa in i programmeringens värld!</p>
+                <h1>Welcome to How2CodeAi 🤖</h1>
+                <p>Your journey into the world of programming!</p>
                 <div style="margin-top: 15px; padding: 10px; background: rgba(100,108,255,0.2); border-radius: 10px; border: 1px solid var(--primary-color);">
-                    <small>💡 Klicka på ℹ️-ikonen bredvid språken för att se dess användningsområde!</small>
+                    <small>💡 Click the ℹ️ icon next to the languages to see their use cases!</small>
                 </div>
             </section>
             <div id="map-container" class="map-container">
@@ -82,7 +82,7 @@
 
             <!-- Bottom Action Bar -->
             <footer class="bottom-action-bar">
-                <button id="btn-check" class="btn-primary" disabled>Kolla Svaret</button>
+                <button id="btn-check" class="btn-primary" disabled>Check Answer</button>
             </footer>
         </main>
         
@@ -90,12 +90,32 @@
         <div id="feedback-panel" class="feedback-panel hidden">
             <div id="feedback-icon" class="feedback-icon">✓</div>
             <div class="feedback-text">
-                <h2 id="feedback-title">Grymt jobbat!</h2>
-                <p id="feedback-desc">Det var helt rätt.</p>
+                <h2 id="feedback-title">Great job!</h2>
+                <p id="feedback-desc">That was completely right.</p>
             </div>
             <div class="feedback-actions">
-                <button id="btn-hint" class="btn-secondary hidden">💡 Ge mig en ledtråd</button>
-                <button id="btn-continue" class="btn-primary">Fortsätt</button>
+                <button id="btn-hint" class="btn-secondary hidden">💡 Give me a hint</button>
+                <button id="btn-continue" class="btn-primary">Continue</button>
+            </div>
+        </div>
+
+        <!-- Ask AI Floating Button -->
+        <button id="btn-ask-ai" class="btn-ask-ai">
+            🤖 Ask AI
+        </button>
+
+        <!-- Ask AI Chat Modal -->
+        <div id="ai-chat-modal" class="ai-chat-modal hidden">
+            <div class="chat-header">
+                <h3>Ask AI 🤖</h3>
+                <button id="btn-close-chat" class="icon-btn close-btn">&times;</button>
+            </div>
+            <div id="chat-history" class="chat-history">
+                <div class="chat-message ai-message">Hello! I'm your AI coding assistant. Are you stuck or do you need something explained? Ask me!</div>
+            </div>
+            <div class="chat-input-area">
+                <input type="text" id="chat-input" placeholder="Type your question here..." autocomplete="off" />
+                <button id="btn-send-chat" class="btn-send">Send</button>
             </div>
         </div>
     </div>

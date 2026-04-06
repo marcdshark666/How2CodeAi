@@ -71,6 +71,14 @@ let currentSelection = null;
 let currentLessonObj = null;
 let currentHintLevel = 0;
 
+// AI Chat elements
+const btnAskAi = document.getElementById('btn-ask-ai');
+const aiChatModal = document.getElementById('ai-chat-modal');
+const btnCloseChat = document.getElementById('btn-close-chat');
+const btnSendChat = document.getElementById('btn-send-chat');
+const chatInput = document.getElementById('chat-input');
+const chatHistory = document.getElementById('chat-history');
+
 // Initialization
 function init() {
     // Add interactions to map
@@ -128,7 +136,7 @@ function renderMap() {
         infoBtn.onmouseout = () => infoBtn.style.transform = 'scale(1)';
         infoBtn.addEventListener('click', (e) => {
              e.stopPropagation();
-             alert(`Användningsområde för ${mod.title}:\n\n${mod.usage}`);
+             alert(`Use case for ${mod.title}:\n\n${mod.usage}`);
         });
 
         labelContainer.appendChild(label);
@@ -161,9 +169,17 @@ function loadLesson() {
     
     const module = curriculumData[appState.currentModuleIndex];
     if (appState.currentLessonIndex >= module.lessons.length) {
-        // Module Complete!
         if (!appState.completedModules.includes(appState.currentModuleIndex)) {
             appState.completedModules.push(appState.currentModuleIndex);
+        }
+        appState.hearts = 3;
+        appState.currentModuleIndex = null;
+        appState.currentLessonIndex = 0;
+        saveState();
+        alert("Wow, you completed the module!");
+        if (appState.unlockedModules < curriculumData.length) {
+            appState.unlockedModules++;
+            saveState();
         }
         renderMap();
         return;
@@ -174,19 +190,18 @@ function loadLesson() {
     interactiveArea.innerHTML = '';
     currentSelection = null;
     
-    // Calculate and Update Progress
     appState.progress = (appState.currentLessonIndex / module.lessons.length) * 100;
     updateProgress();
 
     if (currentLessonObj.type === 'mcq') {
         renderMCQ(currentLessonObj);
-        btnCheck.classList.add('hidden'); // Hide check button for MCQ, we auto-advance
+        btnCheck.classList.add('hidden');
     } else if (currentLessonObj.type === 'info') {
         btnCheck.disabled = false;
-        btnCheck.textContent = "Förstått!";
+        btnCheck.textContent = "Understood!";
     } else if (currentLessonObj.type === 'code') {
         renderCodeEditor(currentLessonObj);
-        btnCheck.classList.add('hidden'); // Code editor has its own run button
+        btnCheck.classList.add('hidden');
     }
 }
 
@@ -200,15 +215,14 @@ function renderMCQ(lesson) {
         btn.textContent = opt;
         btn.addEventListener('click', () => {
             currentSelection = idx;
-            // Auto-check MCQ
             if (currentSelection === currentLessonObj.correctAnswer) {
                 playSound('correct');
-                showFeedback(true, "Rätt!", currentLessonObj.feedback);
+                showFeedback(true, "Correct!", currentLessonObj.feedback);
             } else {
                 playSound('wrong');
                 appState.hearts--;
                 updateHearts();
-                showFeedback(false, "Fel svar", "Det var tyvärr fel. Men du lär dig av dina misstag!");
+                showFeedback(false, "Wrong Answer", "Unfortunately that was incorrect. Focus and try again!");
             }
         });
         optionsContainer.appendChild(btn);
@@ -234,12 +248,12 @@ function renderCodeEditor(lesson) {
     runBtnContainer.className = 'run-btn-container';
     const runBtn = document.createElement('button');
     runBtn.className = 'btn-run';
-    runBtn.innerHTML = '▶ Kör Kod';
+    runBtn.innerHTML = '▶ Run Code';
     
     const outputArea = document.createElement('div');
     outputArea.className = 'live-output';
     outputArea.id = 'live-output';
-    outputArea.innerHTML = '<span style="color: #64748b;">(Resultatet visas här - Console)</span>';
+    outputArea.innerHTML = '<span style="color: #64748b;">(Result shown here - Console)</span>';
     
     runBtn.addEventListener('click', () => {
         const code = textarea.value;
@@ -263,18 +277,14 @@ function renderCodeEditor(lesson) {
             for(let line of lines) {
                 if(line.includes("print(")) {
                     hasPrint = true;
-                    // match print('hello') or print("hello")
                     let match = line.match(/print\(['"](.*?)['"]\)/);
                     if(match) output += match[1] + "<br/>";
-                } else if(line.includes("=")) {
-                    // super dummy mock for variables
-                    output += "<span style='color:#64748b'>Variabel sparad i minnet...</span><br/>";
                 }
             }
             if(!hasPrint && code.trim().length > 0 && !code.includes("=")) {
-                 output = "<span style='color:var(--wrong-color);'>Inget utskrivet. Använd print()</span>";
+                 output = "<span style='color:var(--wrong-color);'>Nothing outputted. Use print()</span>";
             }
-            outputArea.innerHTML = output || "Kördes utan utmatning.";
+            outputArea.innerHTML = output || "Executed with no output.";
         } else if (lesson.lang === 'csharp') {
             let output = "";
             let lines = code.split('\n');
@@ -285,17 +295,16 @@ function renderCodeEditor(lesson) {
                     let match = line.match(/Debug\.Log\(['"](.*?)['"]\)/);
                     if(match) output += match[1] + "<br/>";
                 } else if(line.includes("int ") || line.includes("string ") || line.includes("float ")) {
-                    output += "<span style='color:#64748b'>Variabel allokerad i minnet...</span><br/>";
+                    output += "<span style='color:#64748b'>Variable allocated in memory...</span><br/>";
                 }
             }
-            // require semicolon
             if(code.trim().length > 0 && !code.trim().endsWith(";")) {
-                 output += "<span style='color:var(--wrong-color);'>Kompileringsfel: Saknar semikolon (;) i slutet av raden!</span>";
+                 output += "<span style='color:var(--wrong-color);'>Compilation Error: Missing semicolon (;) at the end!</span>";
             } else if(!hasPrint && code.trim().length > 0) {
-                 output = (output || "") + "<span style='color:var(--wrong-color);'>Inget utskrivet. Använd Debug.Log()</span>";
+                 output = (output || "") + "<span style='color:var(--wrong-color);'>Nothing outputted. Use Debug.Log()</span>";
             }
             
-            outputArea.innerHTML = output || "Kompilerad utan utmatning.";
+            outputArea.innerHTML = output || "Compiled with no output.";
         } else if (lesson.lang === 'cpp') {
             let output = "";
             let lines = code.split('\n');
@@ -308,36 +317,33 @@ function renderCodeEditor(lesson) {
                 }
             }
             if(code.trim().length > 0 && !code.trim().endsWith(";")) {
-                 output += "<span style='color:var(--wrong-color);'>Kompileringsfel: Saknar semikolon (;)!</span>";
+                 output += "<span style='color:var(--wrong-color);'>Compilation Error: Missing semicolon (;)!</span>";
             } else if(!hasPrint && code.trim().length > 0) {
-                 output = (output || "") + "<span style='color:var(--wrong-color);'>Inget utskrivet. Använd std::cout << </span>";
+                 output = (output || "") + "<span style='color:var(--wrong-color);'>Nothing outputted. Use std::cout << </span>";
             }
             
-            outputArea.innerHTML = output || "Kompilerad utan utmatning.";
+            outputArea.innerHTML = output || "Compiled with no output.";
         }
         
-        // Validation logic
         if (lesson.validationPattern) {
              const regex = new RegExp(lesson.validationPattern, 'i');
              if(regex.test(code)) valid = true;
         } else if (lesson.validationLogic) {
-             // eval basic validation logic provided in data.js
              try {
                 valid = lesson.validationLogic(code);
              } catch(e) { valid = false; }
         } else {
-             // Fallback regex
              valid = lesson.validationRegex.test(code);
         }
 
         if (valid) {
             playSound('correct');
-            showFeedback(true, "Strålande koder!", currentLessonObj.successFeedback || "Koden fungerade perfekt.");
+            showFeedback(true, "Correct!", currentLessonObj.successFeedback || "The code worked perfectly.");
         } else {
             playSound('wrong');
             appState.hearts--;
             updateHearts();
-            showFeedback(false, "Nja, inte riktigt...", currentLessonObj.errorFeedback || "Kolla koden en gång till!");
+            showFeedback(false, "Syntax Error", currentLessonObj.errorFeedback || "Check your code again!");
         }
     });
     
@@ -352,7 +358,6 @@ function renderCodeEditor(lesson) {
 
 
 btnCheck.addEventListener('click', () => {
-    // Info view check
     if (currentLessonObj.type === 'info') {
         playSound('correct');
         appState.currentLessonIndex++;
@@ -363,22 +368,20 @@ btnCheck.addEventListener('click', () => {
 
 btnHint.addEventListener('click', () => {
     if (currentHintLevel === 0) {
-        // Show Hint
-        feedbackTitle.textContent = "Ledtråd 💡";
-        feedbackDesc.textContent = currentLessonObj.hint || "Läs frågan en gång till väldigt noga!";
-        btnHint.textContent = "Visa Svar & Förklaring";
+        feedbackTitle.textContent = "Hint 💡";
+        feedbackDesc.textContent = currentLessonObj.hint || "Read the question carefully!";
+        btnHint.textContent = "Show Answer & Explanation";
         currentHintLevel = 1;
     } else if (currentHintLevel === 1) {
-        // Show Explanation
-        feedbackTitle.textContent = "Svar & Förklaring 📖";
+        feedbackTitle.textContent = "Answer & Explanation 📖";
         let answerText = "";
         if (currentLessonObj.type === 'mcq') {
             answerText = currentLessonObj.options[currentLessonObj.correctAnswer];
         } else if (currentLessonObj.type === 'code') {
-            answerText = currentLessonObj.validationRegex ? currentLessonObj.validationRegex.source.replace(/\\/g, '') : "Korrekt kodstruktur.";
+            answerText = currentLessonObj.validationRegex ? currentLessonObj.validationRegex.source.replace(/\\/g, '') : "Correct code structure.";
         }
-        feedbackDesc.innerHTML = `<strong>Rätt svar är:</strong> <br/><code>${answerText}</code><br/><br/><strong>Varför?</strong><br/>${currentLessonObj.explanation || "För att detta följer syntaxen för detta språk."}`;
-        btnHint.classList.add('hidden'); // No more help
+        feedbackDesc.innerHTML = `<strong>The answer is:</strong> <br/><code>${answerText}</code><br/><br/><strong>Why?</strong><br/>${currentLessonObj.explanation || "Because it matches the syntax rules for this language."}`;
+        btnHint.classList.add('hidden');
         currentHintLevel = 2;
     }
 });
@@ -387,7 +390,7 @@ btnContinue.addEventListener('click', () => {
     if (feedbackPanel.classList.contains('wrong')) {
          feedbackPanel.classList.add('hidden');
          if(appState.hearts <= 0) {
-             alert('Du har slut på hjärtan! Vi startar om modulen.');
+             alert('You are out of hearts! Restarting the module.');
              appState.hearts = 3;
              updateHearts();
              startModule(appState.currentModuleIndex);
@@ -412,20 +415,67 @@ function showFeedback(isCorrect, titleText, descText) {
         feedbackIcon.innerHTML = '×';
         feedbackTitle.textContent = titleText;
         feedbackDesc.textContent = descText;
-        btnContinue.textContent = "Försök igen";
+        btnContinue.textContent = "Try again";
         
-        // Show hint button if hint is available
-        if (currentLessonObj.hint || currentLessonObj.explanation) {
+        if (currentLessonObj && (currentLessonObj.hint || currentLessonObj.explanation)) {
              btnHint.classList.remove('hidden');
-             btnHint.textContent = "💡 Ge mig en ledtråd";
+             btnHint.textContent = "💡 Give me a hint";
         }
     } else {
         feedbackIcon.innerHTML = '✓';
         feedbackTitle.textContent = titleText;
         feedbackDesc.textContent = descText;
-        btnContinue.textContent = "Fortsätt";
+        btnContinue.textContent = "Continue";
     }
 }
+
+// AI Chat Logic
+btnAskAi.addEventListener('click', () => {
+    aiChatModal.classList.remove('hidden');
+});
+
+btnCloseChat.addEventListener('click', () => {
+    aiChatModal.classList.add('hidden');
+});
+
+function sendChatMessage() {
+    const text = chatInput.value.trim();
+    if(!text) return;
+    
+    const userMsg = document.createElement('div');
+    userMsg.className = 'chat-message user-message';
+    userMsg.textContent = text;
+    chatHistory.appendChild(userMsg);
+    chatInput.value = '';
+    
+    chatHistory.scrollTop = chatHistory.scrollHeight;
+    
+    setTimeout(() => {
+        const aiMsg = document.createElement('div');
+        aiMsg.className = 'chat-message ai-message';
+        
+        let response = "I'm your AI instructor! ";
+        if (currentLessonObj) {
+            response += `It looks like you're in the ${currentLessonObj.lang || 'coding'} module right now. `;
+            if(currentLessonObj.hint) {
+                response += `Let me give you a push in the right direction: ${currentLessonObj.hint}`;
+            } else {
+                response += "Make sure you read the instructions carefully. Syntax is usually the biggest issue!";
+            }
+        } else {
+            response += "Choose a module on the map to start learning. If you have questions about a specific concept, just ask!";
+        }
+        
+        aiMsg.textContent = response;
+        chatHistory.appendChild(aiMsg);
+        chatHistory.scrollTop = chatHistory.scrollHeight;
+    }, 800);
+}
+
+btnSendChat.addEventListener('click', sendChatMessage);
+chatInput.addEventListener('keypress', (e) => {
+    if(e.key === 'Enter') sendChatMessage();
+});
 
 function updateProgress() {
     progressFill.style.width = appState.progress + '%';
