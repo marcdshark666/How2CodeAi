@@ -459,6 +459,71 @@ function showFeedback(isCorrect, titleText, descText) {
     }
 }
 
+// ------------------------------------
+// THE ADVANCED LOCAL BRAIN (AI)
+// ------------------------------------
+
+const knowledgeBase = [
+    { keys: ['loop', 'for', 'while', 'upprepa'], text: "Låt oss prata om Loopar! 🔄 En loop låter dig köra samma kod hundratals gånger utan att behöva skriva den igen. Det sparar enormt mycket tid." },
+    { keys: ['array', 'lista', 'list'], text: "En Array är som en lång byrå med massor av lådor där du kan lagra data i en viss ordning, istället för att ha 100 olika variabler." },
+    { keys: ['funktion', 'function', 'def', 'void'], text: "En Funktion är ett kodblock du skapar som utför en specifik uppgift. Du 'kallar' sedan på funktionen när du behöver den, som ett litet miniprogram." },
+    { keys: ['klass', 'class', 'objekt', 'object'], text: "Klasser (Classes) är som ritningar. Om du bygger ett bilspel kan du göra en Klass som heter 'Bil'. Då kan du bygga 100 bilar i spelet utan att skriva om allt!" },
+    { keys: ['variabel', 'var', 'let', 'const', 'variab'], text: "En variabel är som en minneslåda. Du bestämmer namnet: `score = 10`. Senare kan du öka den. Det är så applikationer kommer ihåg poäng!" },
+    { keys: ['if', 'else', 'villkor', 'condition'], text: "If-satser är hur program tar beslut! `If (player.health < 0) { GameOver(); }`. Den kollar OM något är sant, annars gör den något annat." },
+    { keys: ['string', 'sträng', 'text', 'quote', 'citat'], text: "En String är vanlig mänsklig text. Man skyddar den alltid med citattecken `\"Text här\"` så att programmet slutar tänka och inte förväxlar det med kod." },
+    { keys: ['int', 'integer', 'heltal'], text: "En Integer ('int') är ett heltal, t.ex. 5, 0 eller -100. Till skillnad från en sträng kan man lägga ihop dem med matematik: 5 + 5 = 10." },
+    { keys: ['boolean', 'bool', 'sant', 'falskt', 'true', 'false'], text: "En Boolean är den renaste formen av data. Den kan bara vara två saker: True (Sant) eller False (Falskt). Datorer är byggda av miljarder små Booleans!" },
+    { keys: ['api', 'fetch', 'nätverk'], text: "Ett API är en bro mellan program. T.ex. om din app vill veta vädret, frågar den SMHI:s API. 'Har du vädret i Stockholm?' så svarar servern med sin data." },
+    { keys: ['algoritm', 'algorithm'], text: "En algoritm är helt enkelt en beskrivning steg-för-steg för hur man löser ett problem. Precis som ett kakrecept, fast för datorn!" },
+    { keys: ['databas', 'database', 'sql'], text: "En databas är platsen där vi sparar data permanent (som en jättestor Excel-fil på en säker server). Används för att lagra konton och sparfiler." },
+    { keys: ['semicolon', 'semikolon', ';'], text: "Semikolon `;` är otroligt kritiskt i t.ex. C# och C++. Där vi människor använder en punkt `.` för att avsluta en mening, använder datorn semikolon för att veta var meningen tar slut." },
+    { keys: ['print', 'skriv', 'cout', 'log'], text: "I Python skriver vi `print()`, i C# skriver vi `Debug.Log()` och i C++ `std::cout`. Syftet: Att skicka text ut ur datorns system ut till skärmen i ditt ansikte!" },
+    { keys: ['parenthes', 'parentes', 'bracket'], text: "Parenteser `()` markerar nästan alltid ett **Funktionsanrop**. `print` är bara ordet print, men `print()` betyder 'Utför denna handling nu!'." }
+];
+
+function analyzeGenericSyntax(code, lang) {
+    let feedback = [];
+    
+    // Check balanced quotes
+    let doubleQuotes = (code.match(/"/g) || []).length;
+    let singleQuotes = (code.match(/'/g) || []).length;
+    if (doubleQuotes % 2 !== 0) feedback.push("• Ojämnt antal dubbla citattecken `\"`. Du har öppnat en sträng men inte stängt den (eller tvärtom).");
+    if (singleQuotes % 2 !== 0) feedback.push("• Ojämnt antal enkla citattecken `'`. Citattecken kommer i par!");
+    
+    // Check balanced parentheses
+    let openParen = (code.match(/\(/g) || []).length;
+    let closeParen = (code.match(/\)/g) || []).length;
+    if (openParen > closeParen) feedback.push("• En parentes öppnades `(` men stängdes aldrig `)`. Detta får datorn att vänta på instruktonen för evigt!");
+    if (closeParen > openParen) feedback.push("• Du har för många slutparenteser `)`. En parentes verkar vara överskott.");
+    
+    // Specific Language Rule: Semicolons
+    if (lang === 'csharp' || lang === 'cpp') {
+        let codeTrimmed = code.trim();
+        if (codeTrimmed.length > 0 && !codeTrimmed.endsWith(";") && !codeTrimmed.endsWith("}") && !codeTrimmed.startsWith("//")) {
+            feedback.push("• Typiskt fel: C# och C++ kräver absolut att varje regelrätt linje kod avslutas med ett semikolon `;` (Viktigaste regeln!)");
+        }
+    }
+    
+    // Specific Language Rule: Capitalization
+    if (lang === 'python') {
+         if (code.includes("Print(") || code.includes("PRINT(")) {
+             feedback.push("• Python är extremt skiftlägeskänsligt. Det finns inget kommando som heter 'Print'. Det måste vara helt små bokstäver: `print`.");
+         }
+         let openSquig = (code.match(/\{/g) || []).length;
+         if (openSquig > 0) feedback.push("• Info: Vanligtvis används inte måsvingar `{...}` för kodblock i Python. Python använder 'indents' (mellanslag/tab) istället!");
+    } else if (lang === 'csharp') {
+         if (code.toLowerCase().includes("debug.log") && !code.includes("Debug.Log")) {
+             feedback.push("• C# är känsligt för stora bokstäver. Debug Logger funktionen stavas `Debug.Log`. Annars ser den inte funktionen.");
+         }
+    } else if (lang === 'cpp') {
+         if (code.toLowerCase().includes("cout") && !code.includes("std::cout")) {
+             feedback.push("• Du måste anropa C++ standardbiblioteket för terminalutmatning med små bokstäver: `std::cout`.");
+         }
+    }
+    
+    return feedback;
+}
+
 // AI Chat Logic
 btnAskAi.addEventListener('click', () => {
     aiChatModal.classList.remove('hidden');
@@ -497,62 +562,40 @@ function sendChatMessage() {
         // 1. Check if user is asking for debugging / error checking
         if (lowerText.includes('wrong') || lowerText.includes('fel') || lowerText.includes('error') || lowerText.includes('why') || lowerText.includes('varför') || lowerText.includes('hjälp') || lowerText.includes('help')) {
             if (currentLessonObj && currentLessonObj.type === 'code' && editorCode.trim().length > 0) {
-                let codeLower = editorCode.toLowerCase();
-                response = "Låt oss analysera din kod steg-för-steg! 🕵️‍♂️<br/><br/>";
                 
-                let foundError = false;
-                if (currentLessonObj.lang === 'python') {
-                    if (editorCode.includes("Print(") || editorCode.includes("PRINT(")) {
-                        response += "1. **Stor Bokstav**: Du skrev `Print` med en stor bokstav. Python är helt skiftlägeskänsligt (Case Sensitive). Datorn vet inte vad 'Print' är, den förstår bara exakt `print` med små bokstäver.<br/><br/>";
-                        foundError = true;
-                    }
-                    if (editorCode.includes("print ") && !editorCode.includes("(")) {
-                        response += "2. **Parenteser Saknas**: Du skrev `print`, men du glömde att använda parenteserna direkt efteråt. `print()` är en funktion som behöver parenteser som händer för att hålla din data.<br/><br/>";
-                        foundError = true;
-                    }
-                    if (!editorCode.includes('"') && !editorCode.includes("'") && codeLower.includes("hello")) {
-                        response += "3. **Citattecken Saknas**: Du försöker skriva ut vanlig text, men du glömde sätta citattecken `\"` eller `'` runt texten! Utan dem tror datorn att texten är programkod.<br/><br/>";
-                        foundError = true;
-                    }
-                }
-                else if (currentLessonObj.lang === 'csharp' || currentLessonObj.lang === 'cpp') {
-                    if (!editorCode.trim().endsWith(";")) {
-                        response += "1. **Semikolon Saknas**: Du glömde den absolut viktigaste regeln i detta språk! Varje mening måste avslutas med ett semikolon `;`. Titta i slutet av din rad.<br/><br/>";
-                        foundError = true;
-                    }
-                    if (currentLessonObj.lang === 'csharp' && codeLower.includes("debug.log") && !editorCode.includes("Debug.Log")) {
-                        response += "2. **Stora Bokstäver**: C# är skiftlägeskänsligt. Funktionen måste skrivas exakt `Debug.Log` (stort D och stort L).<br/><br/>";
-                        foundError = true;
-                    }
-                }
+                let analysis = analyzeGenericSyntax(editorCode, currentLessonObj.lang);
                 
-                if (!foundError) {
-                    response += "Bra, din syntax/grammatik ser faktiskt helt rätt ut! Felet kan istället vara att du inte exakt skrev den text lektionen bad om. Lektionen vill att koden ska valideras för exakt: `" + (currentLessonObj.validationRegex ? currentLessonObj.validationRegex.source.replace(/\\/g, '') : "korrekt resultat") + "`. Kolla extra noga efter mellanslag och stavfel i din sträng!";
+                response = "Jag låter min *Advanced Local Brain* skanna koden i inmatningsrutan... 🕵️‍♂️<br/><br/>";
+                
+                if (analysis.length > 0) {
+                     response += "Bingo! Jag hittade några grammatiska syntax-fel som orsakar systemkrascher:<br/><br/>" + analysis.join("<br/><br/>");
+                } else {
+                     response += "Intressant. Din grammatik/syntax är faktiskt oklanderlig! Inga missade parenteser eller citattecken, och allt följer språkets kompilatorregler.<br/><br/>";
+                     response += "Men om spelet säger att du har fel, är det förmodligen för att din kod gör sitt jobb *men inte* vad lektionen bad om! Kontrollera texten noga så det inte är ett litet stavfel i det du blev fraggad att tillverka.";
+                     if(currentLessonObj.hint) response += `<br/><br/>**Mitt Djupaste Tips:** ${currentLessonObj.hint}`;
                 }
             } else {
-                 response = "Jag behöver se vad du försöker göra! Skriv kod i rutan så kan jag ge exakt steg-för-steg feedback.";
+                 response = "Jag behöver se vad du försöker göra! Skriv kod i editorn till vänster, och fråga sedan mig om vad som är fel så skannar min hjärna rad för rad.";
             }
         } 
-        // 2. Advanced NLP Keywords if they ask about concepts
-        else if (lowerText.includes('parenthes') || lowerText.includes('parentes') || lowerText.includes('bracket')) {
-            response = "Parenteser `()` markerar nästan alltid ett **Funktionsanrop**. Exempel: `print` är bara ordet print, men `print()` betyder 'Utför detta nu!'. Det innanför parentesen är informationen du ger till funktionen.";
-        } else if (lowerText.includes('quote') || lowerText.includes('citat')) {
-            response = "Citattecken (`\"` eller `'`) skyddar text. Utan dem tror datorn att du försöker köra kod, och kraschar. Citattecken säger till datorn: 'Läs detta som vanlig mäsnklig text.' Text kallas för en String.";
-        } else if (lowerText.includes('variab')) {
-            response = "En variabel är som en digital flyttkartong. Du bestämmer ett namn: `namn = 'Alex'`. Nästa gång du säger `print(namn)` så tittar datorn i lådan och skriver ut 'Alex'.";
-        } else if (lowerText.includes('semicolon') || lowerText.includes('semikolon') || lowerText.includes(';')) {
-            response = "Semikolon `;` är otroligt kritiskt i t.ex. C# och C++. Där vi människor använder en punkt `.` för att avsluta en mening, använder datorn semikolon för att veta exakt var instruktionen tar slut.";
-        } else if (lowerText.includes('print') || lowerText.includes('skriv')) {
-            response = "Funktionen `print()` skickar data från minnet till din skärm. I C# heter det dock `Debug.Log()` och i C++ `std::cout`. Allt har exakt samma syfte!";
-        } else if (currentLessonObj) {
-            response += `Du är på lektionen för ${currentLessonObj.lang || 'allmän kod'}. `;
-            if(currentLessonObj.hint) {
-                response += `Här är min djupa ledtråd: ${currentLessonObj.hint}`;
-            } else {
-                response += "Läs testet lugnt. Om du är osäker, fråga mig 'Vad är fel med min kod?' så analyserar jag djupt!";
+        // 2. Generic Knowledge Base Query (Handling all other programming questions)
+        else {
+            let answered = false;
+            for (let item of knowledgeBase) {
+                // If any of the item's keywords exist in the user's text
+                if (item.keys.some(k => lowerText.includes(k))) {
+                     response = "🤖 " + item.text;
+                     answered = true;
+                     break;
+                }
             }
-        } else {
-            response += "Jag är din AI-mentor! Fråga mig 'Vad är fel?' för stegvis genomgång, eller fråga om varför vi använder parenteser!";
+            if (!answered) {
+                 if (currentLessonObj) {
+                     response = `Jag är en fullt utvecklad AI-utbildare! Om du fastnade, prova fråga mig: "Vad är fel med min kod i editorn?". Du kan också ställa allmänna frågor som: "Vad är en array?" eller "Varför använder vi parenteser?".`;
+                 } else {
+                     response = "Jag är How2CodeAis superhjärna. Ställ frågor till mig om grundläggande koncept! Vet du exempelvis vad en loop, funktion eller databas är? Fråga mig!";
+                 }
+            }
         }
         
         aiMsg.innerHTML = response;
